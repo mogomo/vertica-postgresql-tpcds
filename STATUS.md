@@ -57,8 +57,8 @@ else runs there and its lid is closed.
    storage location, the 26.2 upgrade backup and the folders in the admin user's home.
    Disk is sufficient (183 GB free on root, 691 GB on `/data`). Flat files go to `/data`
    and are kept until both products are loaded at that scale, then deleted to free disk.
-8. Repository: new, private, name `vertica-postgresql-tpcds`, created on GitHub by the
-   owner; this folder is its local clone-to-be (`git init` done, identity set to the
+8. Repository: `vertica-postgresql-tpcds`, created private on GitHub by the owner on
+   2026-10-31; this folder is its local clone-to-be (`git init` done, identity set to the
    owner's GitHub noreply identity, branch `main`). Contents: scripts, SQL, results,
    README, RESULTS, COMPARISON, charts, BLOG.md, VIDEO.md, `video/` (manim project).
 9. Blog: BLOG.md in the repo, technical and detailed, for Vertica customers, to be
@@ -150,6 +150,9 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 ## Log
 
+- 2026-10-31: GitHub repository created (private); first commit with STATUS.md and
+  .gitignore pushed by the owner. Work starts only when the owner says
+  "start the benchmark".
 - 2026-10-30: project defined; host access verified (Vertica 26.3.0-2 installed by the
   owner on 2026-10-17, PostgreSQL absent); all decisions above agreed with the owner;
   approval for the whole chain given; this folder created. Next: step 1 of the plan.
