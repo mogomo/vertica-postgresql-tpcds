@@ -1,0 +1,9 @@
+# local settings (host address, credentials, local paths) - never committed
+config.env
+# toolkit build, generated data, generated queries, query output, scratch
+work/
+*.log
+__pycache__/
+# manim render output
+video/media/
+video/output/
