@@ -1,4 +1,4 @@
-"""S01 - one laptop, two databases, the same data."""
+"""S01 - one machine, two databases, the same data."""
 from kit import *
 
 SHEET = [("Machine", "Dell Precision 3591 laptop"),
@@ -13,15 +13,14 @@ def build(f, ch):
     title = chapter_title("The test")
     f.play(FadeIn(title), run_time=0.6)
 
-    laptop = RoundedRectangle(corner_radius=0.15, width=4.6, height=2.9).set_stroke(GRAY_TEXT, 1.5)
-    base = Line(LEFT * 2.7, RIGHT * 2.7).set_stroke(GRAY_TEXT, 2).next_to(laptop, DOWN, buff=0.12)
+    box = RoundedRectangle(corner_radius=0.15, width=4.6, height=2.9).set_stroke(GRAY_TEXT, 1.5)
     dv, dp = db_icon(color=V_TEXT), db_icon(color=P_TEXT)
-    dv.move_to(laptop.get_center() + LEFT * 1.1 + UP * 0.15)
-    dp.move_to(laptop.get_center() + RIGHT * 1.1 + UP * 0.15)
+    dv.move_to(box.get_center() + LEFT * 1.1 + UP * 0.15)
+    dp.move_to(box.get_center() + RIGHT * 1.1 + UP * 0.15)
     lv = body("Vertica 26.3", size=FS_CAPTION, color=V_TEXT).next_to(dv, DOWN, buff=0.18)
     lp = body("PostgreSQL 18.6", size=FS_CAPTION, color=P_TEXT).next_to(dp, DOWN, buff=0.18)
-    machine = VGroup(laptop, base, dv, dp, lv, lp).move_to(LEFT * 3.3 + DOWN * 0.3)
-    f.play(Create(laptop), Create(base), run_time=0.9)
+    machine = VGroup(box, dv, dp, lv, lp).move_to(LEFT * 3.3 + DOWN * 0.3)
+    f.play(Create(box), run_time=0.9)
     f.play(LaggedStart(FadeIn(dv), FadeIn(lv), lag_ratio=0.3), run_time=0.7)
     f.hold_until(f.cue(ch, "and PostgreSQL eighteen point six"))
     f.play(LaggedStart(FadeIn(dp), FadeIn(lp), lag_ratio=0.3), run_time=0.7)

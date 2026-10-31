@@ -1,4 +1,4 @@
-# Vertica and PostgreSQL on the same analytic workload: 99 queries, one laptop, measured
+# Vertica and PostgreSQL on the same analytic workload: 99 queries, one machine, measured
 
 "Couldn't we just run our reports on PostgreSQL?" Every analytics team hears this
 question sooner or later. PostgreSQL is an excellent database, it is everywhere, and it
@@ -35,7 +35,7 @@ Three findings stand out:
    sub-results take Vertica a fraction of a second and PostgreSQL minutes - or longer
    than we were willing to wait.
 3. **At 102 GB, storage decides.** Vertica keeps the data in 39 GB, which nearly fits in
-   the laptop's 64 GB of memory. PostgreSQL needs 147 GB, reads from disk, spills 55 GB
+   the machine's 64 GB of memory. PostgreSQL needs 147 GB, reads from disk, spills 55 GB
    of intermediate results per run, and finishes only 43 of the 99 queries within their
    limits. Its median gap grows from 5x to 21x.
 
@@ -180,7 +180,7 @@ both products answer identical SQL.
 
 ## The 99 queries at scale factor 100
 
-At ten times the data, Vertica's total time grew 7.1 times - from 94 s to 664 s.
+At ten times the data, Vertica's total time grew 7.0 times - from 94 s to 664 s.
 PostgreSQL finished only 43 of the 99 queries within their limits (60 s for most,
 up to 333 s for the queries Vertica itself needed more than 12 s for). On the 43 queries
 it finished at both scale factors its time grew 14.6 times, Vertica's 6.6 times.
@@ -193,7 +193,7 @@ it finished at both scale factors its time grew 14.6 times, Vertica's 6.6 times.
 | median | 5.1x | 20.9x |
 
 The reason is memory. At scale factor 10 both data sets fit into RAM. At scale factor
-100, Vertica's 39 GB still nearly fits into the 61 GiB the laptop can use; PostgreSQL's
+100, Vertica's 39 GB still nearly fits into the 61 GiB the machine can use; PostgreSQL's
 147 GB does not, so its scans read from disk, and its hash joins and sorts wrote 55 GB of
 temporary files per run. A side effect showed in the timings themselves: eight
 PostgreSQL queries that took 23-51 s in the first run went over 60 s in the second,
@@ -252,7 +252,7 @@ The measurements line up with the architecture of the two products:
   period comparisons, many joins over the fact tables - is where Vertica's optimizer and
   execution engine pay off, by two to three orders of magnitude on individual queries.
 - The gap widens with data size. Compression keeps Vertica's working set in memory far
-  longer; at 100 GB on the same laptop, PostgreSQL ran out of memory to cache its data
+  longer; at 100 GB on the same machine, PostgreSQL ran out of memory to cache its data
   and could not finish most of the workload in five times Vertica's time.
 - The less obvious costs add up too: nearly four times the disk space, and nearly an hour of
   index builds and vacuuming after every 100 GB load.
@@ -262,7 +262,7 @@ The measurements line up with the architecture of the two products:
 - One workload (decision support), one machine, one query stream. Transactions, many
   concurrent users and continuous data changes were not measured - that is where
   PostgreSQL is strong.
-- One laptop, and Vertica as a single node. Vertica is a massively parallel database
+- One machine, and Vertica as a single node. Vertica is a massively parallel database
   built to scale out over a cluster; on several nodes, or on a server with more memory,
   cores and disks, it would probably do better than here. (More memory would also help
   PostgreSQL at 100 GB.)

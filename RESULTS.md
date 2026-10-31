@@ -1,6 +1,6 @@
 # Results: TPC-DS on Vertica 26.3 and PostgreSQL 18.6
 
-Measured on 2026-10-31 on one laptop, both products on the same machine, data, queries
+Measured on 2026-10-31 on one machine, both products with the same data, queries
 and procedure (rules in [README.md](README.md#rules-of-the-comparison)). Side-by-side
 tables of every metric and the best time of each query: [COMPARISON.md](COMPARISON.md).
 Query plans behind the biggest differences: [analysis/](analysis/README.md).
@@ -137,7 +137,7 @@ Queries both products finished, PostgreSQL time / Vertica time (best of 3):
   join; queries 4, 11 and 74 join a large CTE to itself through nested loops. These
   queries take 0.15-8 s on Vertica and minutes or more on PostgreSQL. Plans:
   [analysis/](analysis/README.md).
-- **Scaling.** From SF10 to SF100 (10x the data) Vertica's total time grew 7.1x. On the
+- **Scaling.** From SF10 to SF100 (10x the data) Vertica's total time grew 7.0x. On the
   43 queries PostgreSQL finished at both scale factors, its time grew 14.6x (Vertica on
   the same queries: 6.6x). At SF10 both data sets fit into memory; at SF100 Vertica's
   39 GB still nearly does, PostgreSQL's 147 GB does not, and PostgreSQL wrote 55 GB of

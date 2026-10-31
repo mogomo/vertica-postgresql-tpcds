@@ -20,8 +20,8 @@ question sooner or later. PostgreSQL is an excellent database. It is everywhere,
 costs nothing to start with. So instead of arguing, we measured it.
 
 [SCENE 01 — The test]
-ANCHOR: One laptop, two databases, the same data.
-One laptop, two databases, the same data. Vertica twenty-six point three, and
+ANCHOR: One machine, two databases, the same data.
+One machine, two databases, the same data. Vertica twenty-six point three, and
 PostgreSQL eighteen point six, the current release. The workload is derived from
 TPC-DS, the industry's decision-support benchmark: twenty-four tables of a retailer that
 sells through stores, a catalog and the web, and ninety-nine analytic queries. We ran it
@@ -80,7 +80,7 @@ ANCHOR: Then we multiplied the data by ten.
 Then we multiplied the data by ten. Vertica's time grew seven times, to six hundred and
 sixty-four seconds. PostgreSQL finished only forty-three of the ninety-nine queries within
 their limits. The reason is memory. Vertica's thirty-nine gigabytes nearly fit into the
-laptop's memory. PostgreSQL's hundred and forty-seven do not. Its scans go to disk, and
+machine's memory. PostgreSQL's hundred and forty-seven do not. Its scans go to disk, and
 its joins spill fifty-five gigabytes of intermediate results per run. The typical gap
 grows from five times to twenty-one.
 
@@ -139,7 +139,7 @@ About 870 words: about 6 minutes at 140 words per minute, plus the opening and c
 | 04 | 94 s vs ≥ 837 s; 8 not finished; 7 faster or equal, 21 within 2x, median 5.1x | COMPARISON.md, RESULTS.md |
 | 05 | query 5: 1.53 s vs 3.63 s (SF10), 24.9 s vs 35.0 s (SF100) | COMPARISON.md |
 | 06 | query 1: 0.24 s vs > 600 s; the same pattern in queries 1, 6, 30, 81 | RESULTS.md, analysis/README.md |
-| 07 | 664 s (x7.1); 43 / 99 finished; 39.2 vs 147.5 GB vs 61 GiB RAM; 55.2 GB temp files per run; median 20.9x | COMPARISON.md, RESULTS.md |
+| 07 | 664 s (x7.0); 43 / 99 finished; 39.2 vs 147.5 GB vs 61 GiB RAM; 55.2 GB temp files per run; median 20.9x | COMPARISON.md, RESULTS.md |
 | 08 | query 30: 0.16 s vs 579.6 s at SF10 (x3,668, the largest ratio of a query that finished); SF1 6.2 s -> SF10 579.6 s (x93; Vertica x2.4); SF100 estimate ~15 h; SF100 run with a 30-minute limit: not finished | RESULTS.md "What the time limits mean", `results/*_rerun-600s`, `results/*_q30-1800s` |
 
 ## Production

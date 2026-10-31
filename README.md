@@ -1,7 +1,7 @@
 # TPC-DS: Vertica vs PostgreSQL on the same machine
 
 The TPC-DS decision-support workload (24 tables, 99 queries) run with **Vertica 26.3**
-and **PostgreSQL 18** on the same laptop, from the same flat files, with the same
+and **PostgreSQL 18** on the same machine, from the same flat files, with the same
 queries and the same procedure, at scale factors 10 and 100 (~10 GB and ~100 GB of
 raw data). Everything needed to repeat both runs is in this repository.
 
@@ -219,7 +219,7 @@ consequence of using them, or of any decision based on the results. The scripts 
 OS settings, install software, and drop and create database schemas: run them only on a
 machine set aside for testing, and read them first.
 
-**One node, one laptop.** Both products ran on a single laptop, Vertica as a one-node
+**One node, one machine.** Both products ran on a single machine, Vertica as a one-node
 database. Vertica is a massively parallel database built to scale out over a cluster of
 nodes; on a cluster, or on a server with more memory, cores and disks, Vertica would
 probably show better results than here. The single machine was chosen so that both

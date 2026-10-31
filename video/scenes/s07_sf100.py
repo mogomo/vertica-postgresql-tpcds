@@ -22,7 +22,7 @@ def build(f, ch):
     scale = 0.075   # units per GB
     ram = Rectangle(width=61 * 1.074 * scale, height=0.7).set_stroke(WHITE_SOFT, 1.5)
     ram.move_to([-6.0, -0.4, 0], aligned_edge=LEFT)
-    rl = caption("laptop memory: 61 GiB usable").next_to(ram, UP, buff=0.15, aligned_edge=LEFT)
+    rl = caption("machine memory: 61 GiB usable").next_to(ram, UP, buff=0.15, aligned_edge=LEFT)
     vs = int(metrics("vertica", 100)["stored_bytes"]) / 1e9
     ps = int(metrics("postgresql", 100)["stored_bytes"]) / 1e9
     dv = Rectangle(width=vs * scale, height=0.5).set_stroke(width=0).set_fill(V_FILL, 0.95)

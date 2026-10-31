@@ -213,6 +213,14 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 ## Log
 
+- 2026-10-31 (evening): owner's wording rule: "machine" everywhere; "laptop" only where
+  the exact hardware is named (setup lines, environment sheets, results). Applied to BLOG
+  (incl. title), README, RESULTS, VIDEO.md narration (s01 anchor now "One machine, two
+  databases, the same data.", s07), scenes s01 (generic box instead of a laptop drawing)
+  and s07 caption. Fixed SF10 -> SF100 Vertica growth to 7.0x (663.8 / 94.4 s; 7.1x was the
+  sum of best times) in BLOG, RESULTS, VIDEO.md. Per-scene recording script:
+  `work/narration/narration.txt` (git-ignored, derived from VIDEO.md).
+
 - 2026-10-31 (afternoon): blog prepared for LinkedIn: repository URL added (intro, analysis
   link, "Repeat it yourself"); the 5 tables and 6 charts rendered as PNG in `work/linkedin/`
   (git-ignored; LinkedIn articles take neither Markdown tables nor SVG). Publishing waits
