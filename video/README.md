@@ -37,7 +37,7 @@ recording becomes the soundtrack.
 film.py        the whole video on one timeline (opening mark, chapters, progress line)
 timeline.py    chapter times from VIDEO.md and the recording
 kit.py         product colours, titles, bars, counters, the measured numbers
-scenes/        one build(film, chapter) function per chapter (s00 ... s09)
+scenes/        one build(film, chapter) function per chapter (s00 ... s10)
 style.py       palette (Rocket Software brand), fonts, type scale
 logo.py        the Rocket Software / Vertica lockup as vector, and its reveal
 assets/        logos, fonts (and narration.mp3 once recorded)

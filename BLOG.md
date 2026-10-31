@@ -14,29 +14,30 @@ test yourself.
 | | Vertica 26.3 | PostgreSQL 18.6 |
 |---|---:|---:|
 | **12 GB of raw data (scale factor 10)** | | |
-| 99 queries, best of 3 runs | **94 s** | **≥ 856 s** |
+| 99 queries, best of 3 runs | **94 s** | **≥ 837 s** |
 | Queries finished within their time limit | 99 | 91 |
 | Data on disk | **4.1 GB** | **22.2 GB** |
 | **102 GB of raw data (scale factor 100)** | | |
-| 99 queries, best of 3 runs | **664 s** | **≥ 5,842 s** |
-| Queries finished within their time limit | 99 | 42 |
+| 99 queries, best of 3 runs | **664 s** | **≥ 5,782 s** |
+| Queries finished within their time limit | 99 | 43 |
 | Data on disk | **39.2 GB** | **147.5 GB** |
 
 "≥" means "at least": PostgreSQL queries that ran over their time limit were stopped and
-counted with the limit, so the real figures are higher.
+counted with the limit, so the real figures are higher - for some queries by orders of
+magnitude (see "What the time limits hide" below).
 
 Three findings stand out:
 
 1. **At 12 GB, PostgreSQL holds its own on simple, selective queries** - it was as fast
-   as Vertica or faster on 7 of the 99 queries, and within a factor of two on 20. The
+   as Vertica or faster on 7 of the 99 queries, and within a factor of two on 21. The
    median query took about 5 times as long.
 2. **A specific class of queries breaks it.** Correlated subqueries and large repeated
    sub-results take Vertica a fraction of a second and PostgreSQL minutes - or longer
    than we were willing to wait.
 3. **At 102 GB, storage decides.** Vertica keeps the data in 39 GB, which nearly fits in
    the laptop's 64 GB of memory. PostgreSQL needs 147 GB, reads from disk, spills 55 GB
-   of intermediate results per run, and finishes only 42 of the 99 queries within their
-   limits. Its median gap grows from 5x to 24x.
+   of intermediate results per run, and finishes only 43 of the 99 queries within their
+   limits. Its median gap grows from 5x to 21x.
 
 ## The test setup
 
@@ -126,7 +127,7 @@ or at disk speed. More on that below.
 
 ## The 99 queries at scale factor 10
 
-Vertica ran all 99 queries in 94 s. PostgreSQL needed at least 856 s; 8 queries did not
+Vertica ran all 99 queries in 94 s. PostgreSQL needed at least 837 s; 8 queries did not
 finish within their 60-second limit.
 
 Across the 91 queries both finished, the ratio PostgreSQL / Vertica:
@@ -134,10 +135,10 @@ Across the 91 queries both finished, the ratio PostgreSQL / Vertica:
 | | Queries |
 |---|---:|
 | PostgreSQL as fast or faster | 7 |
-| within 2x | 20 |
-| within 5x | 43 |
-| within 10x | 69 |
-| 10x or more | 22 |
+| within 2x | 21 |
+| within 5x | 44 |
+| within 10x | 70 |
+| 10x or more | 21 |
 
 **Where PostgreSQL wins: selective index lookups.** Query 5 reports sales and returns
 for a 14-day window. PostgreSQL's plan goes through the B-tree indexes on the date keys
@@ -165,30 +166,31 @@ PostgreSQL executes it as a *SubPlan*: for every row of the outer result it scan
 whole intermediate result again to compute that store's average - the work grows with
 the square of the rows. Vertica's optimizer turns the same subquery into a join with
 one pre-computed average per store; its plan contains nothing but hash and merge joins,
-and the query takes a quarter of a second. Queries 6, 30, 41 and 81 follow the same
+and the query takes a quarter of a second. Queries 6, 30 and 81 follow the same
 pattern. Queries 4, 11 and 74 build a large per-customer, per-year summary and join it
 to itself several times; PostgreSQL does that with nested loops, Vertica with hash joins.
 
-How large the effect of the query text alone can be shows in query 41. Vertica does not
-accept its correlated `count(*) > 0` subquery, so - as the rules allow - it runs the
-equivalent `EXISTS` form. PostgreSQL accepts and ran the original text: 18.8 s, against
-0.05 s for Vertica. Given the `EXISTS` text, PostgreSQL plans a semi-join and answers in
-0.03 s. So in query 41 the difference comes from the query text, not the engine - and
-it is listed as such in the results.
+Query 41 shows how much the query text alone can matter. Vertica does not accept its
+correlated `count(*) > 0` subquery, so - as the rules allow - it runs the equivalent
+`EXISTS` form. PostgreSQL accepted the original text and first ran that: 18.8 s, against
+0.05 s for Vertica. With the `EXISTS` text PostgreSQL plans a semi-join and answers in
+0.07 s. That difference came from the text, not the engine, so query 41 was run again on
+PostgreSQL with exactly Vertica's text, and those times are the ones in the results:
+both products answer identical SQL.
 
 ## The 99 queries at scale factor 100
 
 At ten times the data, Vertica's total time grew 7.1 times - from 94 s to 664 s.
-PostgreSQL finished only 42 of the 99 queries within their limits (60 s for most,
-up to 333 s for the queries Vertica itself needed more than 12 s for). On the 42 queries
+PostgreSQL finished only 43 of the 99 queries within their limits (60 s for most,
+up to 333 s for the queries Vertica itself needed more than 12 s for). On the 43 queries
 it finished at both scale factors its time grew 14.6 times, Vertica's 6.6 times.
 
-| Queries both finished, PostgreSQL / Vertica | SF10 (91) | SF100 (42) |
+| Queries both finished, PostgreSQL / Vertica | SF10 (91) | SF100 (43) |
 |---|---:|---:|
-| PostgreSQL as fast or faster | 7 | 1 |
-| within 2x | 20 | 3 |
-| within 10x | 69 | 14 |
-| median | 5.1x | 24.3x |
+| PostgreSQL as fast or faster | 7 | 2 |
+| within 2x | 21 | 4 |
+| within 10x | 70 | 15 |
+| median | 5.1x | 20.9x |
 
 The reason is memory. At scale factor 10 both data sets fit into RAM. At scale factor
 100, Vertica's 39 GB still nearly fits into the 61 GiB the laptop can use; PostgreSQL's
@@ -197,6 +199,31 @@ temporary files per run. A side effect showed in the timings themselves: eight
 PostgreSQL queries that took 23-51 s in the first run went over 60 s in the second,
 because the previous queries had pushed different tables out of the file cache. Vertica's
 three runs differed by less than 0.2%.
+
+## What the time limits hide
+
+Time limits keep a benchmark finite, but they flatter the slower product: a query stopped
+at 60 seconds is counted as 60 seconds, however long it would really have taken. How much
+can that hide? Four facts from the runs:
+
+- **The worst ratio of a query that did finish.** Query 30 at scale factor 10 (customers
+  whose web returns are 20% above their state's average): 580 s on PostgreSQL against
+  0.16 s on Vertica - **3,668 times as long**. In the power run, with its 60-second
+  limit, the same query had shown only as "more than 380 times".
+- **Its growth is measured.** From scale factor 1 to 10, ten times the data, it went from
+  6.2 s to 580 s: 93 times, the square of the data, as the per-row SubPlan in its plan
+  predicts. Vertica's time grew 2.4 times.
+- **The plan at scale factor 100 is the same**, over ten times the rows. The same growth
+  puts query 30 at about **15 hours** there - against 0.78 s on Vertica.
+- **So I gave it 30 minutes at scale factor 100.** It was stopped after 30 minutes, unfinished: at least
+  2,300 times Vertica's time, where the 60-second limit of the power run had shown
+  "more than 77 times".
+
+So "≥ 5,782 s" is a floor, not an estimate. For the correlated-subquery queries the real
+gap at 100 GB is hours per query, not seconds. Not every stopped query is that extreme -
+most of the 56 that hit their limit at scale factor 100 are large scans and joins whose
+data no longer fits in memory, and would likely finish in minutes - but none of them
+would make the PostgreSQL totals smaller.
 
 ## Why the difference
 
@@ -232,15 +259,19 @@ The measurements line up with the architecture of the two products:
 
 ## Limitations
 
-- One workload (decision support), one machine, one node per product, one query stream.
-  Transactions, many concurrent users and continuous data changes were not measured -
-  that is where PostgreSQL is strong.
+- One workload (decision support), one machine, one query stream. Transactions, many
+  concurrent users and continuous data changes were not measured - that is where
+  PostgreSQL is strong.
+- One laptop, and Vertica as a single node. Vertica is a massively parallel database
+  built to scale out over a cluster; on several nodes, or on a server with more memory,
+  cores and disks, it would probably do better than here. (More memory would also help
+  PostgreSQL at 100 GB.)
 - General best-practice tuning for both, not expert tuning per query. A PostgreSQL
   specialist could make individual queries faster, for example by rewriting the
   correlated subqueries by hand - as the query 41 example shows. The test deliberately
   ran the queries as written.
 - Queries that hit their time limit are counted with the limit, so the PostgreSQL totals
-  are lower bounds.
+  are lower bounds - by a wide margin for some queries, as shown above.
 - This is not an official TPC-DS result (see below).
 
 ## Repeat it yourself
@@ -256,4 +287,6 @@ factor runs both products end to end, and every step has a time limit.
 (the TPC-DS toolkit generates the data and the queries), but the TPC run rules -
 throughput test, data maintenance, auditing, pricing - were not followed, and the
 numbers cannot be compared with published TPC-DS results. TPC-DS is a trademark of the
-Transaction Processing Performance Council.*
+Transaction Processing Performance Council. The scripts, results and documents are
+provided as is, without warranty of any kind, and without any responsibility or liability
+of the author for their use (MIT license).*

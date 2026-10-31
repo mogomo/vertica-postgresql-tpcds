@@ -4,12 +4,14 @@
 
 | Iteration | Total time | Server time | Queries OK | Geomean (queries OK in all iterations) |
 |---:|---:|---:|---:|---:|
-| 1 | ≥ 881.3 s | 397.4 s | 91/99 | 1.567 s |
-| 2 | ≥ 856.6 s | 373.0 s | 91/99 | 1.376 s |
-| 3 | ≥ 855.8 s | 372.2 s | 91/99 | 1.404 s |
-| best of each query | ≥ 846.8 s | | 91/99 | ≥ 1.810 s (all queries) |
+| 1 | ≥ 860.9 s | 376.9 s | 91/99 | 1.480 s |
+| 2 | ≥ 837.5 s | 353.9 s | 91/99 | 1.293 s |
+| 3 | ≥ 837.1 s | 353.5 s | 91/99 | 1.320 s |
+| best of each query | ≥ 828.1 s | | 91/99 | ≥ 1.710 s (all queries) |
 
 Did not finish within the time limit (counted with the limit, so the totals marked ≥ are lower bounds): q1 (60 s), q4 (60 s), q6 (60 s), q11 (60 s), q14 (60 s), q30 (60 s), q74 (60 s), q81 (60 s)
+
+Amended: queries 41 from a later run, see [amended.md](amended.md).
 
 Memory spills to disk (all iterations): TEMPORARY FILE 54 (29.85 GB)
 
@@ -127,7 +129,7 @@ Total time = wall clock measured by the client around each query (includes conne
 | 38 | 6.590 | 6.581 | 6.934 | 6.581 | 1 |
 | 39 | 28.061 | 28.982 | 28.908 | 28.061 | 1715 |
 | 40 | 0.497 | 0.449 | 0.496 | 0.449 | 100 |
-| 41 | 20.548 | 19.135 | 18.766 | 18.766 | 42 |
+| 41 | 0.114 | 0.066 | 0.071 | 0.066 | 42 |
 | 42 | 0.434 | 0.459 | 0.601 | 0.434 | 11 |
 | 43 | 1.244 | 1.185 | 1.214 | 1.185 | 17 |
 | 44 | 0.732 | 0.795 | 0.801 | 0.732 | 0 |

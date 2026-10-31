@@ -23,17 +23,17 @@ queries,99,
 queries_ok_all_iterations,91,
 queries_not_finished,8,queries
 queries_not_finished_list,01:60 04:60 06:60 11:60 14:60 30:60 74:60 81:60,query:limit_s
-power_iteration_1_seconds,881.3,s
-power_iteration_2_seconds,856.6,s
-power_iteration_3_seconds,855.8,s
-power_best_iteration_seconds,855.8,s
+power_iteration_1_seconds,860.9,s
+power_iteration_2_seconds,837.5,s
+power_iteration_3_seconds,837.1,s
+power_best_iteration_seconds,837.1,s
 power_best_iteration_is_lower_bound,yes,
-power_best_iteration_server_seconds,372.2,s
-geomean_best_iteration_seconds,1.404,s
-power_sum_best_per_query_seconds,846.8,s
-geomean_best_per_query_seconds,1.810,s
+power_best_iteration_server_seconds,353.5,s
+geomean_best_iteration_seconds,1.320,s
+power_sum_best_per_query_seconds,828.1,s
+geomean_best_per_query_seconds,1.710,s
 best_per_query_is_lower_bound,yes,
-queries_under_1s_best,41,queries
+queries_under_1s_best,42,queries
 spill_bytes_per_iteration,9949277801,bytes
 spill_events_per_iteration,18,events
 machine,Dell Inc. Precision 3591 (laptop),

@@ -60,7 +60,7 @@ def build(f, ch):
     t7 = caption(f"{len(fast)} queries: PostgreSQL as fast or faster", color=V_TEXT)
     t7.move_to([-W / 2, -0.15, 0], aligned_edge=LEFT)
     f.play(Indicate(fast, color=WHITE_SOFT, scale_factor=1.6), FadeIn(t7), run_time=1.0)
-    f.hold_until(f.cue(ch, "Twenty were within a factor of two"))
+    f.hold_until(f.cue(ch, "were within a factor of two"))
     n2 = sum(r < 2 for r in rs)
     x1, x2 = log_x(1, lo, hi, W), log_x(2, lo, hi, W)
     band = Rectangle(width=log_x(2, lo, hi, W) - log_x(lo, lo, hi, W), height=2.6).set_stroke(width=0).set_fill(WHITE_SOFT, 0.06)

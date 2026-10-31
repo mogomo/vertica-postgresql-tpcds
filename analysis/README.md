@@ -1,9 +1,10 @@
-# Query plan analysis (SF10)
+# Query plan analysis
 
 `postgresql_plans_sf10/qNN.plan` and `vertica_plans_sf10/qNN.plan` hold the plans
 (`EXPLAIN`, no execution) of the queries that show the two ends of the comparison, taken
-on the SF10 schemas with the benchmark settings after the power runs. They explain the
-per-query results in [COMPARISON.md](../COMPARISON.md).
+on the SF10 schemas with the benchmark settings after the power runs;
+`postgresql_plans_sf100/q30.plan` is the PostgreSQL plan of query 30 at SF100. They
+explain the per-query results in [COMPARISON.md](../COMPARISON.md).
 
 ## Where PostgreSQL is as fast as Vertica or faster: selective index lookups
 
@@ -24,7 +25,7 @@ filters still means scanning (compressed) columns.
 | 1 | 0.24 s | > 600 s | `ctr_total_return > (select avg(...) from customer_total_return where ctr_store_sk = ...)`: a SubPlan that scans the whole CTE again for every row of the CTE |
 | 30, 81 | 0.16 s, 0.20 s | 580 s, 388 s | the same pattern per state |
 | 6 | 0.15 s | > 600 s | `i_current_price > 1.2 * (select avg(i_current_price) ... where j.i_category = i.i_category)`: a SubPlan per row |
-| 41 | 0.05 s | 18.8 s | `(select count(*) ... where i_manufact = i1.i_manufact) > 0`: a SubPlan per row (see below) |
+| 41 (original text) | 0.05 s | 18.8 s | `(select count(*) ... where i_manufact = i1.i_manufact) > 0`: a SubPlan per row; with the `EXISTS` text both products run, a semi-join (see below) |
 | 4, 11, 74 | 8.3 s, 4.2 s, 1.6 s | > 600 s | the `year_total` CTE is referenced six (4) or four times: it is computed over all fact rows and then joined to itself through nested loops |
 
 Vertica's plans of the same queries contain only hash and merge joins: query 1 has
@@ -34,20 +35,28 @@ subqueries become joins with an aggregate per correlation key, computed once. Th
 PostgreSQL planner keeps them as per-row SubPlans, so their cost grows with the square
 of the rows involved.
 
+Measured: from SF1 to SF10 query 30 went from 6.25 s to 579.6 s on PostgreSQL (93x for
+10x the data), query 81 from 4.89 s to 387.7 s (79x); Vertica 2.4x and 2.6x. At SF100
+the plan of query 30 is unchanged ([postgresql_plans_sf100/q30.plan](postgresql_plans_sf100/q30.plan)):
+the same SubPlan over the CTE, now estimated at 32,803 rows instead of 3,276. What this
+means for the time limits: [RESULTS.md](../RESULTS.md#what-the-time-limits-mean).
+
 ## Query 41: the same meaning, two texts
 
 Vertica does not accept the correlated `count(*)` subquery of query 41, so it runs the
 equivalent `exists (select * ...)` form (see README, "Query changes"). PostgreSQL accepts
-the original text and was measured with it. Run once with Vertica's text, after the power
-runs:
+the original text and first ran it in the power runs:
 
-| | Vertica (EXISTS text) | PostgreSQL, original text (power run) | PostgreSQL, EXISTS text (single run) |
+| | Vertica (EXISTS text) | PostgreSQL, original text | PostgreSQL, EXISTS text (in the results) |
 |---|---:|---:|---:|
-| SF10 | 0.05 s | 18.8 s | 0.03 s |
-| SF100 | 0.11 s | > 60 s (time limit) | 0.06 s |
+| SF10 | 0.054 s | 18.8 s | 0.066 s |
+| SF100 | 0.109 s | > 60 s (time limit) | 0.089 s |
 
-With the `EXISTS` text PostgreSQL plans a hash semi-join instead of a SubPlan per row.
-The difference in query 41 is therefore one of query text, not of the engines.
+With the `EXISTS` text PostgreSQL plans a hash semi-join instead of a SubPlan per row
+(`postgresql_plans_sf10/q41_exists.plan`; the original text: `q41.plan`). The
+difference was one of query text, not of the engines, so PostgreSQL now gets the same
+`EXISTS` text as Vertica, and query 41 in the PostgreSQL results comes from a run with that
+text (best of 3, see RESULTS.md, "Query 41").
 
 ## Answer check reports
 
@@ -60,3 +69,6 @@ results, iteration 1 of each run):
   (the other queries show as missing: only the five were run);
 - `answers_sf10.md`: SF10 power runs; differences only for the 8 queries PostgreSQL did
   not finish within 60 s, NULL position under `LIMIT` (77, 93) and NaN vs NULL (17).
+- `answers_q41_sf10.md`, `answers_q41_sf100.md`: query 41 with the identical `EXISTS`
+  text, PostgreSQL against the Vertica power run: identical rows (the other queries show
+  as missing: only query 41 was run).

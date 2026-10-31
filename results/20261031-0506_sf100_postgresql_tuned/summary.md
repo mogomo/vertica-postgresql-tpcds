@@ -4,12 +4,14 @@
 
 | Iteration | Total time | Server time | Queries OK | Geomean (queries OK in all iterations) |
 |---:|---:|---:|---:|---:|
-| 1 | ≥ 5841.9 s | 863.2 s | 42/99 | 10.167 s |
-| 2 | ≥ 6071.6 s | 615.9 s | 34/99 | 10.339 s |
-| 3 | ≥ 6156.9 s | 521.8 s | 31/99 | 10.256 s |
-| best of each query | ≥ 5641.0 s | | 42/99 | ≥ 31.964 s (all queries) |
+| 1 | ≥ 5782.0 s | 863.3 s | 43/99 | 8.900 s |
+| 2 | ≥ 6011.7 s | 616.0 s | 35/99 | 8.938 s |
+| 3 | ≥ 6097.0 s | 521.8 s | 32/99 | 8.842 s |
+| best of each query | ≥ 5581.1 s | | 43/99 | ≥ 29.929 s (all queries) |
 
-Did not finish within the time limit (counted with the limit, so the totals marked ≥ are lower bounds): q1 (60 s), q4 (333 s), q6 (60 s), q8 (60 s), q10 (60 s), q11 (162 s), q13 (60 s), q14 (296 s), q15 (60 s), q16 (60 s), q17 (60 s), q19 (60 s), q21 (60 s), q22 (81 s), q23 (273 s), q25 (60 s), q27 (60 s), q29 (60 s), q30 (60 s), q33 (60 s), q35 (60 s), q36 (60 s), q38 (60 s), q39 (81 s), q40 (60 s), q41 (60 s), q43 (60 s), q45 (60 s), q46 (60 s), q47 (60 s), q48 (60 s), q51 (60 s), q56 (60 s), q57 (60 s), q60 (60 s), q64 (60 s), q65 (60 s), q66 (60 s), q67 (235 s), q69 (60 s), q70 (60 s), q71 (60 s), q72 (60 s), q74 (60 s), q75 (136 s), q76 (60 s), q77 (60 s), q78 (329 s), q79 (60 s), q80 (60 s), q81 (60 s), q86 (60 s), q87 (60 s), q89 (60 s), q94 (60 s), q95 (204 s), q97 (83 s)
+Did not finish within the time limit (counted with the limit, so the totals marked ≥ are lower bounds): q1 (60 s), q4 (333 s), q6 (60 s), q8 (60 s), q10 (60 s), q11 (162 s), q13 (60 s), q14 (296 s), q15 (60 s), q16 (60 s), q17 (60 s), q19 (60 s), q21 (60 s), q22 (81 s), q23 (273 s), q25 (60 s), q27 (60 s), q29 (60 s), q30 (60 s), q33 (60 s), q35 (60 s), q36 (60 s), q38 (60 s), q39 (81 s), q40 (60 s), q43 (60 s), q45 (60 s), q46 (60 s), q47 (60 s), q48 (60 s), q51 (60 s), q56 (60 s), q57 (60 s), q60 (60 s), q64 (60 s), q65 (60 s), q66 (60 s), q67 (235 s), q69 (60 s), q70 (60 s), q71 (60 s), q72 (60 s), q74 (60 s), q75 (136 s), q76 (60 s), q77 (60 s), q78 (329 s), q79 (60 s), q80 (60 s), q81 (60 s), q86 (60 s), q87 (60 s), q89 (60 s), q94 (60 s), q95 (204 s), q97 (83 s)
+
+Amended: queries 41 from a later run, see [amended.md](amended.md).
 
 Memory spills to disk (all iterations): TEMPORARY FILE 228 (165.64 GB)
 
@@ -127,7 +129,7 @@ Total time = wall clock measured by the client around each query (includes conne
 | 38 | TIMEOUT (limit 60) | SKIPPED (limit 60) | SKIPPED (limit 60) | > 60 | 0 |
 | 39 | TIMEOUT (limit 81) | SKIPPED (limit 81) | SKIPPED (limit 81) | > 81 | 0 |
 | 40 | TIMEOUT (limit 60) | SKIPPED (limit 60) | SKIPPED (limit 60) | > 60 | 0 |
-| 41 | TIMEOUT (limit 60) | SKIPPED (limit 60) | SKIPPED (limit 60) | > 60 | 0 |
+| 41 | 0.144 | 0.098 | 0.089 | 0.089 | 100 |
 | 42 | 18.368 | 36.005 | TIMEOUT (limit 60) | 18.368 | 0 |
 | 43 | TIMEOUT (limit 60) | SKIPPED (limit 60) | SKIPPED (limit 60) | > 60 | 0 |
 | 44 | 13.586 | 20.018 | 22.950 | 13.586 | 10 |

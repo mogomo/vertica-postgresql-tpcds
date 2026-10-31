@@ -118,6 +118,9 @@ def main(folder):
         txt = ", ".join(f"q{int(q)} ({v:.0f} s)" for q, v in sorted(unfinished.items()))
         out += ["", f"Did not finish within the time limit (counted with the limit, so the totals marked ≥ "
                     f"are lower bounds): {txt}"]
+    if (folder / "amended.md").exists():
+        out += ["", f"{(folder / 'amended.md').read_text().splitlines()[0].lstrip('# ')} "
+                    "from a later run, see [amended.md](amended.md)."]
     spill_events = None
     spills = folder / "spills.csv"
     if spills.exists():

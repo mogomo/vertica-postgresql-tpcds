@@ -23,7 +23,7 @@ from logo import lockup_vector, reveal_lockup, rocket_software_mark   # noqa: E4
 from style import *                      # noqa: E402
 
 CHAPTERS = ["s00_cold_open", "s01_test", "s02_fair", "s03_storage", "s04_sf10",
-            "s05_wins", "s06_breaks", "s07_sf100", "s08_meaning", "s09_close"]
+            "s05_wins", "s06_breaks", "s07_sf100", "s08_limits", "s09_meaning", "s10_close"]
 
 
 class Film(MovingCameraScene):

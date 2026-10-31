@@ -17,6 +17,13 @@ RUNS = {
     ("postgresql", 10): "20261031-0145_sf10_postgresql_tuned",
     ("vertica", 100): "20261031-0335_sf100_vertica_tuned",
     ("postgresql", 100): "20261031-0506_sf100_postgresql_tuned",
+    ("vertica", 1): "20261031-0054_sf1_vertica_smoke",
+    ("postgresql", 1): "20261031-0106_sf1_postgresql_smoke",
+}
+# single queries run again with a longer limit
+RERUNS = {
+    ("postgresql", 10): "20261031-0212_sf10_postgresql_rerun-600s",
+    ("postgresql", 100): "20261031-1010_sf100_postgresql_q30-1800s",
 }
 
 # Vertica carries the brand; PostgreSQL is drawn in a neutral grey, never a competitor
@@ -33,12 +40,20 @@ def metrics(product: str, sf: int) -> dict:
     return {r["metric"]: r["value"] for r in csv.DictReader(open(path))}
 
 
-def best_times(product: str, sf: int) -> dict:
+def best_times(product: str, sf: int, runs: dict = RUNS) -> dict:
     best = {}
-    for r in csv.DictReader(open(REPO / "results" / RUNS[(product, sf)] / "timings.csv")):
+    for r in csv.DictReader(open(REPO / "results" / runs[(product, sf)] / "timings.csv")):
         if r["status"] == "ok":
             best[r["query"]] = min(best.get(r["query"], 1e9), float(r["seconds"]))
     return best
+
+
+def stopped_at(product: str, sf: int, query: str, runs: dict = RUNS) -> float | None:
+    """The limit a query was stopped at (None when it finished)."""
+    for r in csv.DictReader(open(REPO / "results" / runs[(product, sf)] / "timings.csv")):
+        if r["query"] == query and r["status"] == "timeout":
+            return float(r["seconds"])
+    return None
 
 
 def ratios(sf: int) -> list[float]:

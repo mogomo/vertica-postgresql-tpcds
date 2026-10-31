@@ -1,15 +1,18 @@
-"""S09 - limits of the test, how to repeat it, the closing lockup."""
+"""S10 - limits of the test, how to repeat it, the closing lockup."""
 from kit import *
 from logo import lockup_vector, reveal_lockup
 
 
 def build(f, ch):
     a = caption("one machine · one workload · one query stream", size=FS_BODY)
+    n = caption("Vertica on a single node: a cluster or stronger hardware would likely do better still", size=FS_CAPTION)
     b = caption("not part of this test: transactions, many concurrent users", size=FS_CAPTION)
     c = caption("Workload derived from TPC-DS. Not an official TPC-DS result.", size=FS_CAPTION)
-    d = body("Every script, setting and timing is published.", size=FS_BODY, color=BRAND_SECONDARY)
-    g = VGroup(a, b, c, d).arrange(DOWN, buff=0.35).move_to(UP * 0.3)
+    d = body("Every script, setting and timing is published, as is.", size=FS_BODY, color=BRAND_SECONDARY)
+    g = VGroup(a, n, b, c, d).arrange(DOWN, buff=0.35).move_to(UP * 0.3)
     f.play(FadeIn(a), run_time=0.6)
+    f.hold_until(f.cue(ch, "Vertica ran as a single node"))
+    f.play(FadeIn(n), run_time=0.5)
     f.hold_until(f.cue(ch, "Transactions and many concurrent users"))
     f.play(FadeIn(b), run_time=0.5)
     f.hold_until(f.cue(ch, "This is not an official"))

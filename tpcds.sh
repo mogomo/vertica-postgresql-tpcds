@@ -13,6 +13,7 @@
 #   run       power run, writes results/<date>_sf<scale>_<product>_<label>/
 #   budgets   per-query time limits from a Vertica run:  ./tpcds.sh budgets results/<vertica-run>
 #   verify    compare the answers of two runs:  ./tpcds.sh verify results/<run-a> results/<run-b>
+#   amend     replace queries of a power run by a later run of them:  ./tpcds.sh amend results/<run> results/<rerun> "<reason>"
 #   env       print the environment description
 #   report    rebuild summary.md and metrics.csv of a results folder:  ./tpcds.sh report results/<run>
 #   compare   side-by-side table of several results folders -> COMPARISON.md:  ./tpcds.sh compare results/<a> results/<b> ...
@@ -29,7 +30,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 S=scripts
 
-usage() { sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 [[ $# -gt 0 ]] || usage 1
 case "$1" in
     -h|--help|help) usage ;;
@@ -37,6 +38,7 @@ case "$1" in
     compare) [[ $# -ge 2 ]] || usage 1; shift; exec python3 $S/compare.py "$@" ;;
     budgets) [[ $# -eq 2 ]] || usage 1; exec python3 $S/budgets.py "$2" ;;
     verify)  [[ $# -ge 3 ]] || usage 1; shift; exec python3 $S/verify_answers.py "$@" ;;
+    amend)   [[ $# -eq 4 ]] || usage 1; shift; exec python3 $S/amend.py "$@" ;;
 esac
 
 # shellcheck disable=SC1091

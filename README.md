@@ -38,7 +38,9 @@ same conditions and their usual best-practice setup, and nothing else:
   A query over its limit is stopped, reported as *did not finish* with its limit,
   and not run again in the later iterations; every total that contains such a query
   is a lower bound (shown as `≥`). At SF10 every query that did not finish was run
-  once more with a 10-minute limit, to give it a real number where possible.
+  once more with a 10-minute limit, to give it a real number where possible, and query
+  30 (the largest ratio among the queries that finished) was run once at SF100 with a
+  30-minute limit.
 
 ## Results
 
@@ -48,21 +50,43 @@ per-query analysis and all results folders: [RESULTS.md](RESULTS.md).
 
 | | Vertica SF10 | PostgreSQL SF10 | Vertica SF100 | PostgreSQL SF100 |
 |---|---:|---:|---:|---:|
-| 99 queries, best of 3 iterations | **94 s** | **≥ 856 s** | **664 s** | **≥ 5,842 s** |
-| Queries finished within their limit | 99 | 91 | 99 | 42 |
-| Geometric mean of the best time per query | 0.32 s | ≥ 1.81 s | 1.36 s | ≥ 31.96 s |
+| 99 queries, best of 3 iterations | **94 s** | **≥ 837 s** | **664 s** | **≥ 5,782 s** |
+| Queries finished within their limit | 99 | 91 | 99 | 43 |
+| Geometric mean of the best time per query | 0.32 s | ≥ 1.71 s | 1.36 s | ≥ 29.93 s |
 | Size in the database (flat files 12.0 / 102.5 GB) | **4.1 GB** | **22.2 GB** (6.3 GB indexes) | **39.2 GB** | **147.5 GB** (33.1 GB indexes) |
 | Load: COPY / indexes / statistics | 33 s / - / 3.5 s | 30 s / 63 s / 98 s | 388 s / - / 11 s | 499 s / 1,099 s / 1,845 s |
 
 `≥`: lower bound - PostgreSQL queries over their time limit are counted with the limit.
 At SF10, three of the eight queries that did not finish within 60 s finished with a
 10-minute limit (121 s, 388 s, 580 s); five needed more than 10 minutes. PostgreSQL was as
-fast as or faster than Vertica on 7 queries at SF10 and 1 at SF100 (selective index
+fast as or faster than Vertica on 7 queries at SF10 and 2 at SF100 (selective index
 lookups); the largest gaps are correlated subqueries, which PostgreSQL runs once per row
-([analysis/](analysis/README.md)).
+([analysis/](analysis/README.md)). What the time limits hide is explained in
+[What the time limits mean](#what-the-time-limits-mean).
 
 ![Power run](charts/power_run.svg)
 ![Storage](charts/storage.svg)
+
+## What the time limits mean
+
+A time limit stops a query, it does not measure it: "> 60 s" or "> 600 s" means *at
+least* that long, and every PostgreSQL total marked `≥` is a floor, not an estimate. How
+much it can hide, from the measurements ([details](RESULTS.md#what-the-time-limits-mean)):
+
+- **Worst ratio of a query that finished:** query 30 at SF10, 579.6 s on PostgreSQL vs
+  0.158 s on Vertica = **3,668x**. With the 60 s limit of the power run it had shown only
+  as "> 380x".
+- **Measured growth:** from SF1 to SF10 (10x the data) query 30 grew 93x on PostgreSQL
+  (6.25 s -> 579.6 s; Vertica 2.4x): a correlated subquery that PostgreSQL runs once per
+  row, so the work grows with the square of the data. The SF100 plan is the same.
+- **SF100:** the same growth gives about 15 hours for query 30 (Vertica: 0.78 s).
+  Run once with a 30-minute limit: **not finished** - at least 2,300x, where the 60 s
+  limit of the power run had shown "> 77x".
+
+Queries 1, 6, 30 and 81 have this pattern; for them the real gap is thousands of times
+at SF10 and more at SF100. Most other queries stopped at SF100 are scans and joins whose
+data no longer fits in memory, likely minutes rather than hours. Either way, the
+PostgreSQL totals can only be higher than shown.
 
 ## How to repeat
 
@@ -77,6 +101,7 @@ scripts/postgresql/install.sh           # PostgreSQL 18 from the PostgreSQL apt 
 SCALE=1 ITERATIONS=1 RUN_LABEL=smoke scripts/run_comparison.sh     # a few minutes per product
 SCALE=10 RERUN_LIMIT=600 scripts/run_comparison.sh
 SCALE=100 DELETE_DATA=yes scripts/run_comparison.sh
+PRODUCT=postgresql SCALE=100 QUERIES=30 ITERATIONS=1 QUERY_TIMEOUT=1800 QUERY_BUDGETS= RUN_LABEL=q30-1800s ./tpcds.sh run
 ./tpcds.sh compare results/<vertica-sf10> results/<postgresql-sf10> results/<vertica-sf100> results/<postgresql-sf100>
 ```
 
@@ -85,6 +110,8 @@ SCALE=100 DELETE_DATA=yes scripts/run_comparison.sh
 sample, schema, load, queries, power run) and then PostgreSQL (schema, load with
 primary keys, indexes and VACUUM ANALYZE, queries, time limits from the Vertica run,
 power run, optional rerun). The other database is stopped while one is measured.
+The query rewrites in this repository already give PostgreSQL the `EXISTS` text of query
+41, so a new run needs no `amend` step.
 Every step has a time limit, so the chain cannot hang.
 
 The single steps are available through `./tpcds.sh` (`PRODUCT=vertica|postgresql`):
@@ -100,6 +127,7 @@ The single steps are available through `./tpcds.sh` (`PRODUCT=vertica|postgresql
 | `run` | power run: 99 queries x `ITERATIONS`, results folder with timings, monitoring data, environment, summary |
 | `budgets` | per-query time limits from a Vertica results folder |
 | `verify` | compare the answers of two runs |
+| `amend` | replace queries of a power run by a later run of them (original rows kept, `amended.md` says why) |
 | `report`, `compare` | rebuild a summary; side-by-side table and charts of several runs |
 
 Main settings (`config.env.example` has all of them):
@@ -137,6 +165,13 @@ PostgreSQL (`scripts/postgresql/rewrite.py`):
 | `date + 30 days` -> `date + 30` | 5, 12, 16, 20, 21, 32, 37, 40, 77, 80, 82, 92, 94, 95, 98 | PostgreSQL adds days with `date + integer` |
 | `case when lochierarchy = 0 ...` in `ORDER BY` -> the expression the alias names | 36, 70, 86 | PostgreSQL accepts an output alias in `ORDER BY` only as a whole sort key |
 | `a / b` with two integers -> `cast(a as numeric) / b` | 21, 34, 73, 78, 83 | the queries compute ratios (e.g. `hd_dep_count / hd_vehicle_count > 1.2`); Vertica divides integers as decimals, PostgreSQL would truncate and return other rows |
+| `(select count(*) ... correlated) > 0` -> `exists (select * ...)` | 41 | the same text as Vertica, so both products run identical SQL for query 41 |
+
+Query 41 was first run on PostgreSQL with the original `count(*)` text (18.8 s at SF10,
+over its 60 s limit at SF100); with the `EXISTS` text it takes 0.07 s and 0.09 s. Its
+rows in the PostgreSQL power runs come from a run of query 41 alone with the identical
+text, 3 iterations, same limits (`results/*_q41-exists`, `./tpcds.sh amend`); the
+original rows are kept in `timings_original.csv` of each run.
 
 Only a dialect template per product (`sql/<product>/dialect.tpl`, row limit as
 `LIMIT n`) is added to the toolkit.
@@ -156,7 +191,8 @@ the result rows (text without CHAR padding, numbers with a tolerance of 0.01):
   answers could not be compared there.
 
 The check was repeated on the SF10 power runs with the same outcome (reports in
-[analysis/answers/](analysis/answers/)).
+[analysis/answers/](analysis/answers/)); query 41 with the identical `EXISTS` text
+returns the same rows as Vertica at SF10 and SF100.
 
 ## What is measured
 
@@ -176,16 +212,36 @@ The check was repeated on the SF10 power runs with the same outcome (reports in
 
 ## Disclaimer
 
-This is not an official TPC-DS benchmark result. The workload is derived from TPC-DS:
-the TPC-DS toolkit is used to generate the data and the queries, but the run rules of
-the TPC (throughput test, data maintenance, auditing, pricing) are not followed, so
-the numbers cannot be compared with published TPC-DS results. TPC-DS is a trademark of
-the Transaction Processing Performance Council. The toolkit is downloaded from its own
-repository under its own license and is not part of this repository.
+**Provided as is.** The scripts, settings, results, documents and the video in this
+repository are provided "as is", without warranty of any kind, express or implied. The
+author accepts no responsibility or liability for any damage, data loss, cost or other
+consequence of using them, or of any decision based on the results. The scripts change
+OS settings, install software, and drop and create database schemas: run them only on a
+machine set aside for testing, and read them first.
 
-The results describe one workload on one machine with one node per product; other
-workloads (transactions, many concurrent users, data updates) and other hardware can
-give different results.
+**One node, one laptop.** Both products ran on a single laptop, Vertica as a one-node
+database. Vertica is a massively parallel database built to scale out over a cluster of
+nodes; on a cluster, or on a server with more memory, cores and disks, Vertica would
+probably show better results than here. The single machine was chosen so that both
+products run on identical hardware (PostgreSQL runs on one server). More memory would
+also help PostgreSQL at SF100, where its data did not fit in RAM.
+
+**Not a TPC-DS result.** This is not an official TPC-DS benchmark result. The workload is
+derived from TPC-DS: the TPC-DS toolkit is used to generate the data and the queries, but
+the run rules of the TPC (throughput test, data maintenance, auditing, pricing) are not
+followed, so the numbers cannot be compared with published TPC-DS results. TPC-DS is a
+trademark of the Transaction Processing Performance Council. The toolkit is downloaded
+from its own repository under its own license and is not part of this repository.
+
+**One workload.** The results describe one workload (decision support, one query stream)
+on one machine; other workloads (transactions, many concurrent users, data updates) and
+other hardware can give different results.
+
+## License
+
+[MIT](LICENSE): free to use, copy, modify and distribute, with the copyright notice; no
+warranty. The TPC-DS toolkit, Vertica and PostgreSQL are under their own licenses and are
+not part of this repository.
 
 ## Repository layout
 
@@ -207,4 +263,5 @@ charts/                   comparison charts (SVG, written by ./tpcds.sh compare)
 RESULTS.md, COMPARISON.md results and analysis; side-by-side tables of all runs
 BLOG.md                   article about the comparison
 VIDEO.md, video/          narration script and the animated video (manim)
+LICENSE                   MIT license
 ```

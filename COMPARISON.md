@@ -16,12 +16,12 @@ Same toolkit, data, queries (`dsqgen -QUALIFY Y`), procedure and machine for eve
 | Load throughput | 358.7 MB/s | 394.4 MB/s | 264.0 MB/s | 205.3 MB/s |
 | Primary keys and indexes | - | 63.2 s | - | 1098.6 s |
 | Statistics | 3.5 s | 97.5 s | 11.4 s | 1845.0 s |
-| Queries OK in all iterations | 99/99 | 91/99 | 99/99 | 31/99 |
-| Queries not finished within the limit | 0 | 8 | 0 | 57 |
-| Power run, best iteration | 94.4 s | ≥ 855.8 s | 663.8 s | ≥ 5841.9 s |
-| Sum of the best time of each query | 92.9 s | ≥ 846.8 s | 659.8 s | ≥ 5641.0 s |
-| Geometric mean of the best times | 0.323 s | ≥ 1.810 s | 1.361 s | ≥ 31.964 s |
-| Queries under 1 s | 78 | 41 | 53 | 1 |
+| Queries OK in all iterations | 99/99 | 91/99 | 99/99 | 32/99 |
+| Queries not finished within the limit | 0 | 8 | 0 | 56 |
+| Power run, best iteration | 94.4 s | ≥ 837.1 s | 663.8 s | ≥ 5782.0 s |
+| Sum of the best time of each query | 92.9 s | ≥ 828.1 s | 659.8 s | ≥ 5581.1 s |
+| Geometric mean of the best times | 0.323 s | ≥ 1.710 s | 1.361 s | ≥ 29.929 s |
+| Queries under 1 s | 78 | 42 | 53 | 2 |
 | Largest memory of one query | 19.2 GiB | - | 38.2 GiB | - |
 | Spills per iteration (Vertica events / PostgreSQL temporary files) | 32 | 18 | 288 | 76 |
 | Temporary file bytes per iteration | - | 9.9 GB | - | 55.2 GB |
@@ -100,7 +100,7 @@ Same toolkit, data, queries (`dsqgen -QUALIFY Y`), procedure and machine for eve
 | 38 | 1.038 | 6.581 | 7.713 | > 60 |
 | 39 | 4.957 | 28.061 | 16.179 | > 81 |
 | 40 | 0.328 | 0.449 | 2.465 | > 60 |
-| 41 | 0.054 | 18.766 | 0.109 | > 60 |
+| 41 | 0.054 | 0.066 | 0.109 | 0.089 |
 | 42 | 0.067 | 0.434 | 0.082 | 18.368 |
 | 43 | 0.095 | 1.185 | 0.303 | > 60 |
 | 44 | 0.087 | 0.732 | 0.311 | 13.586 |

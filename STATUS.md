@@ -4,42 +4,55 @@ Handoff notes for the next working session. Host address, credentials and local 
 are kept outside the repository in `config.env` (git-ignored) - read it together with
 this file.
 
-## Where we are (2026-10-31, 09:00 - read this first)
+## Where we are (2026-10-31, 11:00 - read this first)
 
-**State:** all benchmark runs done (SF1 smoke + answer check, SF10 and SF100 for both
-products, SF10 10-minute rerun). Written: README.md (rules, results, how to repeat, query
-changes, answer check), RESULTS.md (full results and analysis), COMPARISON.md + charts/,
-analysis/ (EXPLAIN plans of both products for the extreme queries, q41 measurement,
-answer-check reports), BLOG.md (final draft), VIDEO.md (narration, environment sheet,
-numbers with sources), video/ (manim project: film.py, timeline.py, kit.py, scenes s00-s09;
-draft rendered silent at 480p to `video/media/videos/film/480p15/Film.mp4`, git-ignored).
-Nothing committed yet: commit commands given to the owner in the chat. Repo still private
-(GitHub API 404 on 2026-10-31).
+**State:** benchmark complete. First full commit pushed by the owner (c1bd94e). After it,
+on the owner's request and approval (2026-10-31): query 41 now runs with identical text on
+both products (PostgreSQL rewrite gets the same `EXISTS` form; rerun 3 iterations at SF10
+and SF100, merged into the PostgreSQL power runs with `./tpcds.sh amend`, originals kept
+as `timings_original.csv`); query 30 run once at SF100 with a 30-minute limit to show what
+the time limits hide; README / RESULTS / BLOG / VIDEO.md / analysis / video scenes
+updated (time-limit section, single-node caveat, "as is" disclaimer, MIT license
+section; silent draft re-rendered, 405.7 s, `video/media/videos/film/480p15/Film.mp4`). These changes are NOT committed yet: commit commands were given in the chat.
+Repo still private.
 
 | | Vertica SF10 | PostgreSQL SF10 | Vertica SF100 | PostgreSQL SF100 |
 |---|---:|---:|---:|---:|
-| best iteration | 94.4 s | >= 855.8 s (8 over 60 s) | 663.8 s | >= 5841.9 s (57 over limit) |
+| best iteration | 94.4 s | >= 837.1 s (8 over 60 s) | 663.8 s | >= 5782.0 s (56 over limit) |
+| finished within limit | 99 | 91 | 99 | 43 |
+| median ratio (finished) | | 5.1x | | 20.9x |
 | COPY / indexes / statistics | 33 / - / 3.5 s | 30 / 63 / 98 s | 388 / - / 11 s | 499 / 1099 / 1845 s |
 | size (flat 12.0 / 102.5 GB) | 4.07 GB | 22.2 GB | 39.2 GB | 147.5 GB |
 
+Time-limit argument (owner's request): worst ratio of a finished query = q30 SF10,
+579.6 s vs 0.158 s = 3,668x (60 s limit had shown "> 380x"); measured growth SF1 -> SF10
+93x (6.25 -> 579.6 s; Vertica 2.4x), quadratic per the SubPlan in the plan; SF100 plan
+unchanged (analysis/postgresql_plans_sf100/q30.plan); extrapolation ~54,000 s = ~15 h
+at SF100 (Vertica 0.78 s); 30-minute run at SF100: stopped at 1800 s, not finished (> 2,300x; the power-run limit had shown > 77x).
+
 Host state: VDB holds schemas tpcds_sf1, tpcds_sf10, tpcds_sf100 (+ the owner's other
 project, kept); PostgreSQL 18 cluster (stopped, start.conf manual) holds the same three
-schemas in database tpcds (193 GB incl. WAL on /data); flat files: SF1 and SF10 still in
+schemas in database tpcds (~193 GB incl. WAL on /data); flat files: SF1 and SF10 still in
 /data/tpcds/data (SF100 deleted). Both databases stopped. tune_os settings applied
-(not persisted). Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds) waits for
-the owner's decision.
+(not persisted). Host scripts of the last runs: /data/tpcds/q41_q30.sh (+ .log);
+pre-change PostgreSQL queries kept in /data/tpcds/queries/postgresql/sf{10,100}_before_q41.
+Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds, re-enable the services in
+~/disabled_for_benchmark.txt) waits for the owner's decision.
 
-Next: owner reviews; open question q41 (below); owner records the narration
-(`video/assets/narration.mp3`), then `manim -qh --fps 60 film.py Film` in video/ for the
-final video; screenshots for the video if wanted; making the repo public needs the
-owner's approval of the results.
+**Next (owner):** commit + push the changes (commands in the chat); record the narration
+(VIDEO.md, now 11 chapters s00-s10, ~870 words) as `video/assets/narration.mp3`, then in
+video/: `python timeline.py && manim -qh --fps 60 --disable_caching film.py Film`; decide
+host cleanup; making the repo public needs the owner's approval of the results.
 
-**Open questions for the owner (asked in chat when back):**
-1. q41: Vertica needs the `count(*) > 0` -> `EXISTS` rewrite and runs that text; PostgreSQL
-   ran the original `count(*)` text (18.8 s at SF10, > 60 s limit at SF100). Measured once
-   with Vertica's EXISTS text: PostgreSQL 0.03 s (SF10) / 0.06 s (SF100), Vertica 0.05 /
-   0.11 s. Documented in RESULTS.md and analysis/. Option: identical SQL for both (give
-   PostgreSQL the EXISTS text) and rerun - needs the owner's approval.
+**How the pieces fit (for a new session):** `scripts/run_comparison.sh` = one scale
+factor end to end; `./tpcds.sh <step>` single steps (`amend` = replace queries of a power
+run by a later run). Reports: `python3 scripts/compare.py results/20261031-0132_sf10_vertica_tuned
+results/20261031-0145_sf10_postgresql_tuned results/20261031-0335_sf100_vertica_tuned
+results/20261031-0506_sf100_postgresql_tuned -o COMPARISON.md`. Host: rsync `scripts sql
+tpcds.sh` to `~/vertica-postgresql-tpcds/` (never config.env), run there, rsync new results
+folders back (pulling an existing folder overwrites local edits). Video numbers come from
+`video/kit.py` (RUNS / RERUNS -> results folders); draft render `manim -ql film.py Film` in
+video/ with the venv in config.env (MANIM_SRC/.venv); macOS has no `timeout`.
 
 **The task:** run the TPC-DS benchmark on the same Ubuntu laptop with Vertica 26.3 and
 with PostgreSQL, compare the two side by side (query times, load, storage and
@@ -49,9 +62,10 @@ detailed technical blog (LinkedIn, Vertica customers) and build a 5-10 minute vi
 technology is mentioned anywhere in this repository, the blog or the video.
 
 **Approval:** the owner approved the whole chain in one go on 2026-10-30 (toolkit build,
-data generation SF1/SF10/SF100, loads, all power runs for both products). No further
-question is needed before a heavy run. The host is reserved for this benchmark; nothing
-else runs there and its lid is closed.
+data generation SF1/SF10/SF100, loads, all power runs for both products); on 2026-10-31
+the q41 rerun with identical text and one 30-minute run of a single query. All of it is
+done: any further run needs a new approval. The host is reserved for this benchmark;
+nothing else runs there and its lid is closed.
 
 ### Decisions (all defaults accepted by the owner, exceptions marked *)
 
@@ -85,6 +99,12 @@ else runs there and its lid is closed.
    26.2 timings: 1.6 h per iteration at SF10, 2.1 h at SF100.
    *At SF10 only: every query that timed out is rerun once, alone, with a 10-minute limit
    (no total cap) and reported with its real time or "> 10 min".
+   *(2026-10-31, after the runs) To show what the limits hide: take the worst ratio of a
+   query that finished (q30 SF10, 3,668x), explain from measured facts why stopped queries
+   can be far worse or never end, and prove it with one query given 30 minutes (q30 at
+   SF100). Documented in README / RESULTS / BLOG / VIDEO "What the time limits mean/hide".
+   *(2026-10-31) q41: both products run the identical `EXISTS` text; PostgreSQL's q41 rows
+   come from a rerun merged with `./tpcds.sh amend`.
 6. *Storage and compression are compared side by side: flat-file size, Vertica
    compressed size (projection storage), PostgreSQL table size with and without indexes
    (and TOAST), compression ratio = flat files / database size. Load time and load
@@ -171,6 +191,12 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 ## Rules agreed with the owner
 
+- README must keep: MIT license (LICENSE + section), the "provided as is, no
+  responsibility" disclaimer, the single-node caveat (Vertica would probably do better on
+  a cluster or stronger hardware), the TPC fair-use disclaimer, and the meaning of the
+  time limits. README, RESULTS, COMPARISON, BLOG, VIDEO.md and the video scenes must show
+  the same, latest numbers.
+
 - Every heavy run needs the owner's approval: given once for this whole chain
   (2026-10-30). A new chain (e.g. reruns after a change) needs a new approval.
 - The owner runs all git commits and pushes; prepare the exact commands in the chat.
@@ -186,6 +212,14 @@ Commits and pushes are done by the owner with commands prepared in the chat.
   is kept.
 
 ## Log
+
+- 2026-10-31 (late morning): owner committed the full work (c1bd94e) and approved: q41
+  rerun with identical text for both products; a 30-minute limit for one query to prove
+  the time-limit point; final doc pass (MIT, as-is disclaimer, single node, time limits).
+  Done: PostgreSQL rewrite gets `correlated_count_to_exists`; q41 rerun SF10/SF100 (0.066 /
+  0.089 s, Vertica 0.054 / 0.109 s) merged into the power runs; q30 SF100 30-minute run;
+  scripts/amend.py + `./tpcds.sh amend`; COMPARISON regenerated; docs and video updated
+  (new chapter s08_limits, s08/s09 renamed to s09_meaning/s10_close). Commit pending.
 
 - 2026-10-31: owner said "start the benchmark now". Final decisions: timeout
   max(60 s, 5 x Vertica best) without cap; defaults run dropped; SF10 rerun of timed-out

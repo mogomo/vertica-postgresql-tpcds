@@ -1,0 +1,4 @@
+iteration,query,seconds,status,rows
+1,41,0.144,ok,100
+2,41,0.098,ok,100
+3,41,0.089,ok,100
