@@ -1,4 +1,4 @@
-# Vertica and PostgreSQL on the same analytic workload: 99 queries, one machine, measured
+# Vertica and PostgreSQL: 99 Queries, on nearly one billion rows, one machine, measured
 
 "Couldn't we just run our reports on PostgreSQL?" Every analytics team hears this
 question sooner or later. PostgreSQL is an excellent database, it is everywhere, and it
