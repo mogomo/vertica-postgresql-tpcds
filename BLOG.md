@@ -9,6 +9,8 @@ how the test was made fair, what came out, and why the two products behave so
 differently. Every script, setting and raw timing is published in the repository
 [vertica-postgresql-tpcds](https://github.com/mogomo/vertica-postgresql-tpcds), so you can repeat the test yourself.
 
+The same story as a 6-minute video: https://youtu.be/CKZhh1B6qHc
+
 ## The short version
 
 | | Vertica 26.3 | PostgreSQL 18.6 |
@@ -279,7 +281,8 @@ The measurements line up with the architecture of the two products:
 Everything is in the repository, https://github.com/mogomo/vertica-postgresql-tpcds: installing PostgreSQL, generating the data, the Vertica
 physical design, both loads, the power runs with time limits, the answer check, the query
 plans, and the raw timings and monitoring data of every run. One command per scale
-factor runs both products end to end, and every step has a time limit.
+factor runs both products end to end, and every step has a time limit. The video version
+of this article is on YouTube: https://youtu.be/CKZhh1B6qHc
 
 ---
 

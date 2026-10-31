@@ -8,6 +8,9 @@ raw data). Everything needed to repeat both runs is in this repository.
 Results: [Results](#results) below, the side-by-side tables in
 [COMPARISON.md](COMPARISON.md), every run in its own folder under `results/`.
 
+Video: the whole test in 6 minutes on YouTube, [https://youtu.be/CKZhh1B6qHc](https://youtu.be/CKZhh1B6qHc) (narration and the
+source of every number on screen in [VIDEO.md](VIDEO.md)). The article: [BLOG.md](BLOG.md).
+
 ## Rules of the comparison
 
 The goal is a comparison a sceptical reader can accept, so both products get the

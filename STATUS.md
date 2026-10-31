@@ -38,9 +38,8 @@ pre-change PostgreSQL queries kept in /data/tpcds/queries/postgresql/sf{10,100}_
 Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds, re-enable the services in
 ~/disabled_for_benchmark.txt) waits for the owner's decision.
 
-**Next (owner):** watch the film `video/output/Vertica_and_PostgreSQL_on_the_same_analytic_workload.mp4`
-(6:32, 1080p60) and send notes; commit the video changes (commands in the chat); decide host
-cleanup.
+**Next (owner):** decide host cleanup. The film is published on YouTube (https://youtu.be/CKZhh1B6qHc);
+README, BLOG and VIDEO.md link to it.
 
 **Video (2026-10-31):** narration recorded by the owner as 11 files in work/narration
 (s00-s10.mp3, NARRATION_DIR in config.env); music = MUSIC_SRC in config.env (owner's track,
@@ -218,6 +217,9 @@ Commits and pushes are done by the owner with commands prepared in the chat.
   is kept.
 
 ## Log
+
+- 2026-10-31 (late night): film published by the owner on YouTube (https://youtu.be/CKZhh1B6qHc); link added
+  to README (top), BLOG (intro and "Repeat it yourself") and VIDEO.md.
 
 - 2026-10-31 (late night): video revised after the owner's review: smaller type scale and wider margins
   in every chapter, title rules as long as the title; cold open in two columns (words and

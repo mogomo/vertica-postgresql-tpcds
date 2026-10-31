@@ -5,6 +5,8 @@ the story of [BLOG.md](BLOG.md). The project is in [video/](video/README.md). Th
 the narration (the words recorded), the environment sheet shown on screen, and every number
 that appears in the video with its source.
 
+Published on YouTube: [https://youtu.be/CKZhh1B6qHc](https://youtu.be/CKZhh1B6qHc)
+
 The film: a cold open with music only (the 99 queries of the 102 GB power run as a race on
 the right, the words and then the title on the left), the eleven narrated chapters with a
 caption band (chapter, caption, repository address), a closing chapter that sets the single
