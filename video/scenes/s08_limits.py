@@ -52,11 +52,11 @@ def build(f, ch):
     ends = VGroup(tiny("0").next_to(frame, DOWN, buff=0.1, aligned_edge=LEFT),
                   tiny("30 min").next_to(frame, DOWN, buff=0.1, aligned_edge=RIGHT))
     f.play(Create(frame), FadeIn(ends), run_time=0.5)
-    f.play(GrowFromEdge(fill, LEFT), run_time=2.2, rate_func=linear)
+    f.play(GrowFromEdge(fill, LEFT), run_time=1.4, rate_func=linear)
     f.hold_until(f.cue(ch, "It did not finish"))
     verdict = ("stopped at 30 min: not finished" if limit else "finished")
     s = body(verdict, size=FS_BODY, color=WHITE_SOFT).next_to(frame, RIGHT, buff=0.35)
     f.play(FadeIn(s), run_time=0.5)
     f.hold_until(f.cue(ch, "Every PostgreSQL total"))
-    fl = caption("totals marked ≥ are floors, not estimates", color=WHITE_SOFT).to_edge(DOWN, buff=0.55)
+    fl = caption("totals marked ≥ are floors, not estimates", color=WHITE_SOFT).to_edge(DOWN, buff=0.9)
     f.play(FadeIn(fl), run_time=0.6)

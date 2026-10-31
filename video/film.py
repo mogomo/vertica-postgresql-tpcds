@@ -4,9 +4,9 @@ film.py - the whole video on one timeline.
     manim -ql film.py Film                     # draft, 480p15
     manim -qh --fps 60 film.py Film            # final, 1080p60
 
-Every chapter is a `build(film, chapter)` function in scenes/, played at the time
-timeline.py gives it, so picture and narration share one clock. With
-assets/narration.mp3 present the recording is added as the soundtrack.
+The picture only: audio.py mix adds the voice and the music afterwards. Every chapter is
+a `build(film, chapter)` function in scenes/, started when its recording starts
+(timeline.py), and its animations wait for the words they show.
 """
 
 from __future__ import annotations
@@ -18,12 +18,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-import timeline                          # noqa: E402
-from logo import lockup_vector, reveal_lockup, rocket_software_mark   # noqa: E402
-from style import *                      # noqa: E402
+import timeline as TL                    # noqa: E402
+from captions import band_items          # noqa: E402
+from kit import *                        # noqa: E402
 
 CHAPTERS = ["s00_cold_open", "s01_test", "s02_fair", "s03_storage", "s04_sf10",
             "s05_wins", "s06_breaks", "s07_sf100", "s08_limits", "s09_meaning", "s10_close"]
+TITLE_HOLD = 1.2         # the title stays this long into the first words
 
 
 class Film(MovingCameraScene):
@@ -34,18 +35,12 @@ class Film(MovingCameraScene):
         d = t - self.now()
         if d > 1 / config.frame_rate:
             self.wait(d)
+        elif d < -0.15:
+            print(f"  !! late by {-d:.2f} s at film {t:.2f}")
 
     def cue(self, chapter: dict, phrase: str) -> float:
-        """When `phrase` is spoken in the chapter: its share of the chapter's words,
-        placed between the chapter's start and end (minus the pause at the end)."""
-        words = timeline._words(chapter["text"])
-        target = timeline._words(phrase)
-        n = len(target)
-        for i in range(len(words) - n + 1):
-            if words[i:i + n] == target:
-                span = chapter["end"] - chapter["start"] - timeline.PAUSE * 0.8
-                return chapter["start"] + span * i / max(1, len(words)) - 0.2
-        raise ValueError(f"'{phrase}' is not in the narration of {chapter['id']}")
+        """A little before `phrase` is spoken in the chapter."""
+        return TL.cue_in(chapter, phrase) - 0.15
 
     def clear_stage(self, run_time: float = 0.5) -> None:
         keep = set(getattr(self, "persistent", []))
@@ -54,30 +49,26 @@ class Film(MovingCameraScene):
             self.play(*[FadeOut(m) for m in gone], run_time=run_time)
 
     def construct(self):
-        timing = timeline.load()
-        if timeline.NARRATION.exists():
-            self.add_sound(str(timeline.NARRATION), time_offset=timing["lead_in"])
-        self.timing = timing
+        self.camera.background_color = "#000000"
+        t = TL.load()
+        self.timing = t
+        scenes = t["scenes"]
 
-        # opening: the Rocket Software mark, then the voice starts
-        mark = rocket_software_mark(height=1.4)
-        self.play(FadeIn(mark, scale=0.96), run_time=1.0)
-        self.hold_until(timing["lead_in"] - 0.8)
-        self.play(FadeOut(mark), run_time=0.6)
+        importlib.import_module("scenes.open").build(
+            self, t_title=7.0, t_end=scenes[0]["start"] + TITLE_HOLD)
 
-        # progress line along the bottom edge
-        total = timing["total"]
-        progress = always_redraw(lambda: Line(
-            [-FRAME_W / 2, -FRAME_H / 2 + 0.04, 0],
-            [-FRAME_W / 2 + FRAME_W * min(1.0, self.now() / total), -FRAME_H / 2 + 0.04, 0],
-        ).set_stroke(GRAY_TEXT, 1.5, 0.3))
-        self.add(progress)
-        self.persistent = [progress]
+        band = Band(self, band_items(), t_end=t["lockup"] - 0.5)
+        self.add_foreground_mobject(band)
+        self.persistent = [band]
 
-        for chapter, module in zip(timing["scenes"], CHAPTERS):
-            self.hold_until(chapter["start"] - 0.3)
+        for chapter, module in zip(scenes, CHAPTERS):
+            if chapter is not scenes[0]:                # s00 waits for the title itself
+                self.hold_until(chapter["start"] - 0.3)
             importlib.import_module(f"scenes.{module}").build(self, chapter)
-            if chapter is not timing["scenes"][-1]:
-                self.hold_until(chapter["end"] - 0.6)
+            if chapter is not scenes[-1]:
+                self.hold_until(chapter["end"] + 0.05)
                 self.clear_stage()
-        self.hold_until(total)
+
+        self.hold_until(t["music_len"] + TL.LOGO_HOLD - 0.5)
+        self.clear_stage()
+        importlib.import_module("scenes.disclaimer").build(self, TL.DISCLAIMER_LEN)

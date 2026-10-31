@@ -14,7 +14,6 @@ as `timings_original.csv`); query 30 run once at SF100 with a 30-minute limit to
 the time limits hide; README / RESULTS / BLOG / VIDEO.md / analysis / video scenes
 updated (time-limit section, single-node caveat, "as is" disclaimer, MIT license
 section; silent draft re-rendered, 405.7 s, `video/media/videos/film/480p15/Film.mp4`). Committed and pushed by the owner (7d3407b).
-Repo still private.
 
 | | Vertica SF10 | PostgreSQL SF10 | Vertica SF100 | PostgreSQL SF100 |
 |---|---:|---:|---:|---:|
@@ -39,10 +38,17 @@ pre-change PostgreSQL queries kept in /data/tpcds/queries/postgresql/sf{10,100}_
 Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds, re-enable the services in
 ~/disabled_for_benchmark.txt) waits for the owner's decision.
 
-**Next (owner):** record the narration
-(VIDEO.md, now 11 chapters s00-s10, ~870 words) as `video/assets/narration.mp3`, then in
-video/: `python timeline.py && manim -qh --fps 60 --disable_caching film.py Film`; decide
-host cleanup; making the repo public needs the owner's approval of the results.
+**Next (owner):** watch the film `video/output/Vertica_and_PostgreSQL_on_the_same_analytic_workload.mp4`
+(6:32, 1080p60) and send notes; commit the video changes (commands in the chat); decide host
+cleanup.
+
+**Video (2026-10-31):** narration recorded by the owner as 11 files in work/narration
+(s00-s10.mp3, NARRATION_DIR in config.env); music = MUSIC_SRC in config.env (owner's track,
+used 0-3:27, lengthened by one repeat 0:04.95 -> 3:01.70, chosen by audio.py). Format of the
+companion films (vector-db, graph-udx): music-only cold open (race of the 99 SF100 queries:
+after Vertica's 664 s PostgreSQL has 8 done) + two-line title; caption band (chapter chip,
+caption, address); lockup on the last music hit, 2.5 s silent hold, disclaimer 6 s without
+music. Rebuild: video/README.md. Python: the venv in config.env (MANIM_SRC/.venv).
 
 **How the pieces fit (for a new session):** `scripts/run_comparison.sh` = one scale
 factor end to end; `./tpcds.sh <step>` single steps (`amend` = replace queries of a power
@@ -114,7 +120,7 @@ nothing else runs there and its lid is closed.
    storage location, the 26.2 upgrade backup and the folders in the admin user's home.
    Disk is sufficient (183 GB free on root, 691 GB on `/data`). Flat files go to `/data`
    and are kept until both products are loaded at that scale, then deleted to free disk.
-8. Repository: `vertica-postgresql-tpcds`, created private on GitHub by the owner on
+8. Repository: `vertica-postgresql-tpcds`, created on GitHub by the owner on
    2026-10-31; this folder is its local clone-to-be (`git init` done, identity set to the
    owner's GitHub noreply identity, branch `main`). Contents: scripts, SQL, results,
    README, RESULTS, COMPARISON, charts, BLOG.md, VIDEO.md, `video/` (manim project).
@@ -180,7 +186,7 @@ nothing else runs there and its lid is closed.
 
 ## Repository
 
-The owner creates `vertica-postgresql-tpcds` (private) on GitHub, then:
+The owner creates `vertica-postgresql-tpcds` on GitHub, then:
 
 ```
 cd <this folder>
@@ -213,6 +219,13 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 ## Log
 
+- 2026-10-31 (night): video built from the owner's 11 recordings and music track (pipeline:
+  video/audio.py, timeline.py, captions.py, scenes/open.py, scenes/disclaimer.py; film.py
+  rewritten). VIDEO.md: ANCHOR lines removed (the clock now comes from one recording per
+  chapter), cold-open source row added. config.env / config.env.example: NARRATION_DIR,
+  MUSIC_SRC. Note for the owner: in s08 the transcription hears "a flaw, not an estimate"
+  where the script says "floor" (same sound in many accents) - worth one listen.
+
 - 2026-10-31 (evening): owner's wording rule: "machine" everywhere; "laptop" only where
   the exact hardware is named (setup lines, environment sheets, results). Applied to BLOG
   (incl. title), README, RESULTS, VIDEO.md narration (s01 anchor now "One machine, two
@@ -223,8 +236,7 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 - 2026-10-31 (afternoon): blog prepared for LinkedIn: repository URL added (intro, analysis
   link, "Repeat it yourself"); the 5 tables and 6 charts rendered as PNG in `work/linkedin/`
-  (git-ignored; LinkedIn articles take neither Markdown tables nor SVG). Publishing waits
-  for the repository to go public (owner's approval).
+  (git-ignored; LinkedIn articles take neither Markdown tables nor SVG).
 
 - 2026-10-31 (late morning): owner committed the full work (c1bd94e) and approved: q41
   rerun with identical text for both products; a 30-minute limit for one query to prove
@@ -240,7 +252,7 @@ Commits and pushes are done by the owner with commands prepared in the chat.
   fair-use disclaimer (derived from TPC-DS, not an official result), a limitations
   section and per-query results.
 
-- 2026-10-31: GitHub repository created (private); first commit with STATUS.md and
+- 2026-10-31: GitHub repository created; first commit with STATUS.md and
   .gitignore pushed by the owner. Work starts only when the owner says
   "start the benchmark".
 - 2026-10-30: project defined; host access verified (Vertica 26.3.0-2 installed by the

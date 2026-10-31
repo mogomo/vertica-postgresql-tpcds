@@ -106,14 +106,16 @@ def vbar(value: float, vmax: float, height: float, color: str, width: float = 0.
 
 
 def counter(value: float, decimals: int = 0, size: int = FS_BIG, color: str = WHITE_SOFT,
-            prefix: str = "", suffix: str = "") -> VGroup:
-    """A number that counts up from 0 (animate its .tracker to .target)."""
+            prefix: str = "", suffix: str = "", place=None) -> VGroup:
+    """A number that counts up from 0 (animate its .tracker to .target). place(m) puts
+    the text where it belongs; it runs inside the redraw, every frame."""
     tracker = ValueTracker(0.0)
 
     def make():
         v = tracker.get_value()
         txt = f"{prefix}{v:,.{decimals}f}{suffix}"
-        return body(txt, size=size, color=color)
+        m = body(txt, size=size, color=color)
+        return place(m) if place else m
 
     num = always_redraw(make)
     g = VGroup(num)
@@ -148,3 +150,87 @@ def db_icon(h: float = 1.0, w: float = 0.8, color: str = V_TEXT) -> VGroup:
 def log_x(v: float, lo: float, hi: float, width: float) -> float:
     """Position of v on a logarithmic axis from lo to hi, centred on 0."""
     return (math.log10(v) - math.log10(lo)) / (math.log10(hi) - math.log10(lo)) * width - width / 2
+
+
+# --------------------------------------------------------------------------
+# the caption band (chapter chip, caption, address) - the format of the
+# companion films
+# --------------------------------------------------------------------------
+PX = config.frame_width / 1920.0          # one output pixel (1080p) in scene units
+BAND_H = 64                               # band height, output pixels
+BAND_TOP = -FRAME_H / 2 + BAND_H * PX     # keep content above this line
+ADDRESS = "github.com/mogomo/vertica-postgresql-tpcds"
+
+
+def chip(text: str, size: int = 15) -> VGroup:
+    t = body(text, size=size, weight=BOLD)
+    box = RoundedRectangle(corner_radius=0.12, width=t.width + 0.36, height=t.height + 0.22)
+    box.set_fill(PURPLE, 1).set_stroke(PINK, 1.4, 0.85)
+    t.move_to(box)
+    return VGroup(box, t)
+
+
+class Band(VGroup):
+    """The bottom band. Chips and captions are built once; an updater shows the one
+    that belongs to the current film second (cross-fades of FADE seconds), so the
+    band runs beside the chapters without taking part in their animations.
+
+    items: [(t, chapter_label, caption)], sorted by t; shown from items[0] to t_end."""
+
+    FADE = 0.35
+
+    def __init__(self, scene, items, t_end):
+        super().__init__()
+        self.scene, self.t_end = scene, t_end
+        y = -FRAME_H / 2 + BAND_H * PX / 2
+        bar = Rectangle(width=FRAME_W, height=BAND_H * PX).set_fill("#07070D", 0.92).set_stroke(width=0)
+        bar.move_to([0, y, 0])
+        edge = Line([-FRAME_W / 2, BAND_TOP, 0], [FRAME_W / 2, BAND_TOP, 0])
+        edge.set_stroke(color=[ELECTRIC, MAGENTA, PINK], width=2.5)
+        addr = body(ADDRESS, size=11, color=GRAY_TEXT).move_to([FRAME_W / 2 - 24 * PX, y, 0], aligned_edge=RIGHT)
+        self.chrome = VGroup(bar, edge, addr)
+        self.add(self.chrome)
+        self.t0 = items[0][0]
+        self.chips, self.caps = [], []
+        chips = {}
+        for i, (t, label, text) in enumerate(items):
+            if label not in chips:
+                c = chip(label, size=11).move_to([-FRAME_W / 2 + 24 * PX, y, 0], aligned_edge=LEFT)
+                chips[label] = [c, t, None]
+                self.chips.append(chips[label])
+                self.add(c)
+            t1 = items[i + 1][0] if i + 1 < len(items) else t_end
+            chips[label][2] = t1
+            cap = body(text, size=18).move_to(chips[label][0].get_right() + RIGHT * 0.24, aligned_edge=LEFT)
+            cap.set_y(y)
+            self.caps.append((cap, t, t1))
+            self.add(cap)
+        self.add_updater(lambda m: m._show(m.scene.renderer.time))
+        self._show(0.0)
+
+    def _alpha(self, now, t0, t1):
+        if now < t0 or now > t1 + self.FADE:
+            return 0.0
+        return min(1.0, (now - t0) / self.FADE, max(0.0, (t1 + self.FADE - now) / self.FADE))
+
+    def _show(self, now):
+        a = self._alpha(now, self.t0, self.t_end)
+        bar, edge, addr = self.chrome
+        bar.set_fill(opacity=0.92 * a)
+        edge.set_stroke(opacity=a)
+        addr.set_opacity(a)
+        for c, t0, t1 in self.chips:
+            c[0].set_fill(opacity=self._alpha(now, t0, t1)).set_stroke(opacity=0.85 * self._alpha(now, t0, t1))
+            c[1].set_opacity(self._alpha(now, t0, t1))
+        for cap, t0, t1 in self.caps:
+            cap.set_opacity(self._alpha(now, t0, t1))
+
+
+def power_run(product: str, sf: int) -> list[tuple[str, float, str]]:
+    """The best iteration of a power run, in run order: (query, seconds, status)."""
+    rows = list(csv.DictReader(open(REPO / "results" / RUNS[(product, sf)] / "timings.csv")))
+    total = {}
+    for r in rows:
+        total[r["iteration"]] = total.get(r["iteration"], 0.0) + float(r["seconds"])
+    best = min(total, key=total.get)
+    return [(r["query"], float(r["seconds"]), r["status"]) for r in rows if r["iteration"] == best]

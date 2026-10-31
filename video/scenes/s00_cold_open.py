@@ -3,6 +3,7 @@ from kit import *
 
 
 def build(f, ch):
+    f.hold_until(ch["start"] + 1.25)                  # the title leaves first
     q = body("“Couldn't we just run our reports on PostgreSQL?”", size=FS_HEAD)
     f.play(Write(q), run_time=1.6)
     f.hold_until(f.cue(ch, "PostgreSQL is an excellent database"))

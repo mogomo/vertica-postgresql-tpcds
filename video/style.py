@@ -89,7 +89,15 @@ _FALLBACK_SANS = "Carlito"        # metric-compatible with Calibri
 _FALLBACK_MONO = "Inconsolata"    # open substitute for Consolas
 
 
+# Calibri and Consolas ship with Microsoft Office; on macOS they sit inside the app.
+_OFFICE_FONTS = Path("/Applications/Microsoft Word.app/Contents/Resources/DFonts")
+
+
 def _register_bundled_fonts() -> None:
+    for ttf in ("Calibri.ttf", "Calibrib.ttf", "Calibrii.ttf", "Calibriz.ttf",
+                "Consola.ttf", "Consolab.ttf"):
+        if (_OFFICE_FONTS / ttf).exists():
+            manimpango.register_font(str(_OFFICE_FONTS / ttf))
     if not FONT_DIR.exists():
         return
     for ttf in sorted(FONT_DIR.glob("*.ttf")):

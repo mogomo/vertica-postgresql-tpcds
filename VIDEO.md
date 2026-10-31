@@ -1,26 +1,28 @@
 # Video: Vertica and PostgreSQL on the same analytic workload
 
-An animated video of about 6 minutes (manim, Rocket Software colours and logo) that tells the
-story of [BLOG.md](BLOG.md). The project is in [video/](video/README.md). This file holds
-the narration (the words to be recorded), the environment sheet shown on screen, and
-every number that appears in the video with its source.
+An animated video of 6 minutes 32 seconds (manim, Rocket Software colours and logo) that tells
+the story of [BLOG.md](BLOG.md). The project is in [video/](video/README.md). This file holds
+the narration (the words recorded), the environment sheet shown on screen, and every number
+that appears in the video with its source.
+
+The film: a cold open with music only (the 99 queries of the 102 GB power run as a race,
+then the title), the eleven narrated chapters with a caption band (chapter, caption,
+repository address), the Rocket Software / Vertica lockup on the last hit of the music, and
+the disclaimer without music.
 
 ## Narration
 
 Recording: read at a calm pace (about 140 words per minute); each `[SCENE NN — Title]`
-block is one chapter of the video. The `ANCHOR:` line is the first sentence of the block
-as spoken; the video aligns its chapters to these sentences in the recording. Save the
-recording as `video/assets/narration.mp3`.
+block is one chapter of the video and one recording, `s00.mp3` ... `s10.mp3`, in the folder
+`NARRATION_DIR` of `config.env`. The animations of a chapter follow its recorded words.
 
 ```
 [SCENE 00 — Cold open]
-ANCHOR: Couldn't we just run our reports on PostgreSQL?
 Couldn't we just run our reports on PostgreSQL? Every analytics team hears that
 question sooner or later. PostgreSQL is an excellent database. It is everywhere, and it
 costs nothing to start with. So instead of arguing, we measured it.
 
 [SCENE 01 — The test]
-ANCHOR: One machine, two databases, the same data.
 One machine, two databases, the same data. Vertica twenty-six point three, and
 PostgreSQL eighteen point six, the current release. The workload is derived from
 TPC-DS, the industry's decision-support benchmark: twenty-four tables of a retailer that
@@ -29,7 +31,6 @@ at twelve gigabytes of raw data, and again at a hundred and two gigabytes. Each 
 ran the ninety-nine queries three times, and the best run counts.
 
 [SCENE 02 — Making it fair]
-ANCHOR: A comparison is only worth something if the loser cannot claim it was rigged.
 A comparison is only worth something if the loser cannot claim it was rigged. So both
 products got the same memory budget, about forty gigabytes, and all twenty-two CPU
 threads. Each was tuned the way its own documentation recommends. Vertica: projections
@@ -43,7 +44,6 @@ got a time limit: at least one minute, and five times what Vertica needed. A que
 its limit counts with its limit, so PostgreSQL's totals are minimums.
 
 [SCENE 03 — Storage]
-ANCHOR: Start with the data itself.
 Start with the data itself. Twelve gigabytes of raw text become four point one
 gigabytes in Vertica, and twenty-two in PostgreSQL. At a hundred and two gigabytes, it is
 thirty-nine against a hundred and forty-seven. Look at one table. Inventory holds
@@ -53,7 +53,6 @@ stores each column sorted, and run-length encoding turns long runs of the same v
 into a single entry. Eight gigabytes of text become less than one.
 
 [SCENE 04 — Twelve gigabytes]
-ANCHOR: Now the queries, at twelve gigabytes.
 Now the queries, at twelve gigabytes. Vertica ran all ninety-nine in ninety-four
 seconds. PostgreSQL needed at least eight hundred and thirty-seven, and eight queries did
 not finish within their limit. But look at the queries one by one. On seven of them,
@@ -61,13 +60,11 @@ PostgreSQL was as fast as Vertica, or faster. Twenty-one were within a factor of
 typical query took about five times as long.
 
 [SCENE 05 — Where PostgreSQL wins]
-ANCHOR: Where does PostgreSQL win?
 Where does PostgreSQL win? On selective lookups. Query five reports two weeks of sales.
 PostgreSQL walks the index on the date key and reads exactly those two weeks. That is
 what indexes are made for, and a fair test has to show it.
 
 [SCENE 06 — Where it breaks]
-ANCHOR: And where does it break?
 And where does it break? Query one asks for customers whose returns are twenty percent
 above their store's average. That average is a correlated subquery. PostgreSQL computes
 it again for every single row, scanning the whole intermediate result each time. The work
@@ -76,7 +73,6 @@ average per store, computed once. A quarter of a second, against more than ten m
 Four queries follow this pattern.
 
 [SCENE 07 — A hundred gigabytes]
-ANCHOR: Then we multiplied the data by ten.
 Then we multiplied the data by ten. Vertica's time grew seven times, to six hundred and
 sixty-four seconds. PostgreSQL finished only forty-three of the ninety-nine queries within
 their limits. The reason is memory. Vertica's thirty-nine gigabytes nearly fit into the
@@ -85,7 +81,6 @@ its joins spill fifty-five gigabytes of intermediate results per run. The typica
 grows from five times to twenty-one.
 
 [SCENE 08 — What a time limit hides]
-ANCHOR: A word about those time limits.
 A word about those time limits. A query that was stopped was not measured. More than ten
 minutes means at least ten minutes, and nobody knows how much more. Take the worst query
 that did finish: query thirty, at twelve gigabytes. Five hundred and eighty seconds on
@@ -96,7 +91,6 @@ fifteen hours. So we gave it thirty minutes. It did not finish. Every PostgreSQL
 marked at least is a floor, not an estimate.
 
 [SCENE 09 — What it means]
-ANCHOR: So, can you run your reports on PostgreSQL?
 So, can you run your reports on PostgreSQL? For tens of gigabytes and simple, selective
 queries, it can be good enough. For analytic SQL as it is really written, with
 subqueries, period-over-period comparisons and joins across the fact tables, Vertica is
@@ -104,7 +98,6 @@ faster by orders of magnitude. And the gap grows with your data, because compres
 keeps Vertica's working set in memory.
 
 [SCENE 10 — Repeat it yourself]
-ANCHOR: One machine, one workload, one query stream.
 One machine, one workload, one query stream. Vertica ran as a single node; it is built
 to scale out across a cluster, and on more nodes or stronger hardware it would likely do
 better still. Transactions and many concurrent users were not part of this test. This is
@@ -112,7 +105,8 @@ not an official TPC-DS result. Every script, setting and timing is published, as
 you can run it yourself. Vertica, from Rocket Software.
 ```
 
-About 870 words: about 6 minutes at 140 words per minute, plus the opening and closing logo.
+About 870 words, recorded in 5 minutes 56 seconds; with the cold open, the pauses, the closing
+lockup and the disclaimer the film runs 6 minutes 32 seconds.
 
 ## Environment sheet (shown in scene 01)
 
@@ -131,6 +125,7 @@ About 870 words: about 6 minutes at 140 words per minute, plus the opening and c
 
 | Scene | Number | Source |
 |---|---|---|
+| open | after 664 s (Vertica's best run at 102 GB, all 99 queries): PostgreSQL 8 queries done, query 9 running | `timings.csv` of the SF100 runs, best iteration of each |
 | 01 | 24 tables, 99 queries, 12.0 GB and 102.5 GB raw data | `generate.info` of the SF10 / SF100 runs |
 | 02 | 40 GB, 22 threads; limit = max(60 s, 5 x Vertica) | README "Rules of the comparison", `budgets.csv` |
 | 02 | 5 queries with integer division (21, 34, 73, 78, 83) | README "Query changes", `analysis/answers/` |
@@ -144,5 +139,5 @@ About 870 words: about 6 minutes at 140 words per minute, plus the opening and c
 
 ## Production
 
-See [video/README.md](video/README.md): draft render without narration (timing estimated
-from the words), final render after the recording is in place.
+See [video/README.md](video/README.md). The captions of the band are in
+`video/captions.py`; their numbers are read from the same results files.
