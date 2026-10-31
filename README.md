@@ -3,7 +3,7 @@
 The TPC-DS decision-support workload (24 tables, 99 queries) run with **Vertica 26.3**
 and **PostgreSQL 18** on the same machine, from the same flat files, with the same
 queries and the same procedure, at scale factors 10 and 100 (~10 GB and ~100 GB of
-raw data). Everything needed to repeat both runs is in this repository.
+raw data - on nearly one billion Rows). Everything needed to repeat both runs is in this repository.
 
 Results: [Results](#results) below, the side-by-side tables in
 [COMPARISON.md](COMPARISON.md), every run in its own folder under `results/`.
