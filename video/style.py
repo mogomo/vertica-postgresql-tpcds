@@ -27,13 +27,13 @@ config.background_color = "#000000"
 
 FRAME_W = config.frame_width          # 14.222…
 FRAME_H = config.frame_height         # 8.0
-SAFE = 0.6
-LEFT_X = -FRAME_W / 2 + SAFE          # −6.51
+SAFE = 0.9
+LEFT_X = -FRAME_W / 2 + SAFE          # −6.21
 RIGHT_X = FRAME_W / 2 - SAFE
 TOP_Y = FRAME_H / 2 - SAFE
 BOT_Y = -FRAME_H / 2 + SAFE
 
-TITLE_ANCHOR = np.array([-6.2, TOP_Y, 0.0])
+TITLE_ANCHOR = np.array([LEFT_X + 0.3, TOP_Y + 0.2, 0.0])
 
 # --------------------------------------------------------------------------
 # palette — the Rocket brand, defined once
@@ -124,14 +124,14 @@ assert MONO in _AVAILABLE, (
 # --------------------------------------------------------------------------
 # typographic scale
 # --------------------------------------------------------------------------
-FS_HERO = 72
-FS_BIG = 48
-FS_TITLE = 44
-FS_HEAD = 36
-FS_BODY = 28
-FS_CODE = 24
-FS_CAPTION = 22
-FS_TINY = 18
+FS_HERO = 64
+FS_BIG = 40
+FS_TITLE = 38
+FS_HEAD = 31
+FS_BODY = 24
+FS_CODE = 21
+FS_CAPTION = 19
+FS_TINY = 16
 
 MAX_TEXT_W = FRAME_W * 0.60
 

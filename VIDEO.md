@@ -5,10 +5,11 @@ the story of [BLOG.md](BLOG.md). The project is in [video/](video/README.md). Th
 the narration (the words recorded), the environment sheet shown on screen, and every number
 that appears in the video with its source.
 
-The film: a cold open with music only (the 99 queries of the 102 GB power run as a race,
-then the title), the eleven narrated chapters with a caption band (chapter, caption,
-repository address), the Rocket Software / Vertica lockup on the last hit of the music, and
-the disclaimer without music.
+The film: a cold open with music only (the 99 queries of the 102 GB power run as a race on
+the right, the words and then the title on the left), the eleven narrated chapters with a
+caption band (chapter, caption, repository address), a closing chapter that sets the single
+node of this test beside a Vertica cluster in Eon Mode, the Rocket Software / Vertica lockup
+on the last hit of the music, and the disclaimer without music.
 
 ## Narration
 
@@ -112,7 +113,7 @@ lockup and the disclaimer the film runs 6 minutes 32 seconds.
 
 | | |
 |---|---|
-| Machine | Dell Precision 3591 laptop |
+| Machine | Dell Precision 3591 workstation |
 | CPU | Intel Core Ultra 7 165H, 16 cores, 22 threads |
 | Memory | 64 GB |
 | Disk | 1 TB NVMe SSD |
@@ -126,7 +127,7 @@ lockup and the disclaimer the film runs 6 minutes 32 seconds.
 | Scene | Number | Source |
 |---|---|---|
 | open | after 664 s (Vertica's best run at 102 GB, all 99 queries): PostgreSQL 8 queries done, query 9 running | `timings.csv` of the SF100 runs, best iteration of each |
-| 01 | 24 tables, 99 queries, 12.0 GB and 102.5 GB raw data | `generate.info` of the SF10 / SF100 runs |
+| 01 | 24 tables, 99 queries, 12.0 GB and 102.5 GB raw data; 959 million rows at 102 GB | `generate.info` of the SF10 / SF100 runs; `total_rows` in `metrics.csv` of the SF100 Vertica run |
 | 02 | 40 GB, 22 threads; limit = max(60 s, 5 x Vertica) | README "Rules of the comparison", `budgets.csv` |
 | 02 | 5 queries with integer division (21, 34, 73, 78, 83) | README "Query changes", `analysis/answers/` |
 | 03 | 12.0 -> 4.1 GB (Vertica) / 22.2 GB (PostgreSQL); 102.5 -> 39.2 / 147.5 GB | COMPARISON.md |

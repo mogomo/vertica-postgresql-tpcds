@@ -7,7 +7,7 @@ def build(f, ch):
     f.play(FadeIn(title), run_time=0.6)
     f.hold_until(f.cue(ch, "A query that was stopped"))
     a = body("“> 10 min”  =  at least 10 minutes.  How much more: unknown.", size=FS_BODY)
-    a.to_edge(UP, buff=1.55).to_edge(LEFT, buff=0.9)
+    a.to_edge(UP, buff=1.65).align_to([TITLE_ANCHOR[0], 0, 0], LEFT)
     f.play(FadeIn(a, shift=RIGHT * 0.2), run_time=0.7)
 
     # the worst ratio among the queries that finished: query 30 at SF10, 10-minute limit
@@ -54,7 +54,7 @@ def build(f, ch):
     f.play(Create(frame), FadeIn(ends), run_time=0.5)
     f.play(GrowFromEdge(fill, LEFT), run_time=1.4, rate_func=linear)
     f.hold_until(f.cue(ch, "It did not finish"))
-    verdict = ("stopped at 30 min: not finished" if limit else "finished")
+    verdict = ("PostgreSQL stopped at 30 min: not finished" if limit else "PostgreSQL finished")
     s = body(verdict, size=FS_BODY, color=WHITE_SOFT).next_to(frame, RIGHT, buff=0.35)
     f.play(FadeIn(s), run_time=0.5)
     f.hold_until(f.cue(ch, "Every PostgreSQL total"))

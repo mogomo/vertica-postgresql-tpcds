@@ -9,7 +9,7 @@ def build(f, ch):
                  mono("ctr1.ctr_total_return > (select avg(ctr_total_return) * 1.2", size=FS_CAPTION, color=WHITE_SOFT),
                  mono("    from customer_total_return ctr2", size=FS_CAPTION, color=WHITE_SOFT),
                  mono("    where ctr1.ctr_store_sk = ctr2.ctr_store_sk)", size=FS_CAPTION, color=WHITE_SOFT))
-    sql.arrange(DOWN, aligned_edge=LEFT, buff=0.12).to_edge(UP, buff=1.5).shift(LEFT * 1.0)
+    sql.arrange(DOWN, aligned_edge=LEFT, buff=0.12).to_edge(UP, buff=1.65).shift(LEFT * 1.0)
     f.hold_until(f.cue(ch, "Query one asks"))
     f.play(FadeIn(sql[0]), FadeIn(sql[1]), run_time=0.8)
     f.hold_until(f.cue(ch, "That average is a correlated subquery"))

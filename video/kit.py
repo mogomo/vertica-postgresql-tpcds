@@ -68,7 +68,7 @@ def ratios(sf: int) -> list[float]:
 def chapter_title(text: str) -> VGroup:
     t = body(text, size=FS_TITLE, color=WHITE_SOFT)
     t.move_to(TITLE_ANCHOR, aligned_edge=UL)
-    rule = Line(ORIGIN, RIGHT * 0.9).set_stroke(BRAND_PRIMARY, 3)
+    rule = Line(ORIGIN, RIGHT * t.width).set_stroke(color=[BRAND_PRIMARY, PINK], width=3)
     rule.next_to(t, DOWN, buff=0.14, aligned_edge=LEFT)
     return VGroup(t, rule)
 
@@ -145,6 +145,61 @@ def db_icon(h: float = 1.0, w: float = 0.8, color: str = V_TEXT) -> VGroup:
     bottom = Arc(radius=1, start_angle=PI, angle=PI).set_stroke(color, 2)
     bottom.stretch_to_fit_width(w).stretch_to_fit_height(ry).move_to([0, -body_h / 2 - ry / 2, 0])
     return VGroup(top, left, right, bottom)
+
+
+# --------------------------------------------------------------------------
+# a Vertica node, its depot, communal storage: the cluster drawing of the companion
+# roadmap film, one closed outline each so a node can grow into a cluster
+# --------------------------------------------------------------------------
+def _arc_pts(cx: float, cy: float, rx: float, ry: float, a0: float, a1: float, n: int = 44) -> list:
+    return [np.array([cx + rx * np.cos(t), cy + ry * np.sin(t), 0.0]) for t in np.linspace(a0, a1, n)]
+
+
+def _outline(points, color: str, stroke: float, fill: float) -> VMobject:
+    m = VMobject()
+    m.set_points_as_corners(points + [points[0]])
+    return m.set_stroke(color, stroke).set_fill(color, fill)
+
+
+def stroke_node(w: float = 1.15, h: float = 0.9, color: str = V_TEXT, stroke: float = 1.8) -> VMobject:
+    return RoundedRectangle(corner_radius=0.10, width=w, height=h).set_stroke(color, stroke).set_fill(color, 0.07)
+
+
+def node_detail(node, color: str = V_TEXT, stroke: float = 1.8) -> VGroup:
+    """The bezel and two status lights that make a rectangle read as a machine."""
+    w, h, c = node.width, node.height, node.get_center()
+    bezel = Line([c[0] - w / 2 + 0.09, c[1] + h / 2 - 0.16, 0], [c[0] + w / 2 - 0.09, c[1] + h / 2 - 0.16, 0])
+    bezel.set_stroke(color, stroke * 0.7, 0.7)
+    leds = VGroup(*[Dot([c[0] - w / 2 + 0.17 + i * 0.11, c[1] + h / 2 - 0.08, 0], radius=0.024, color=color)
+                    for i in range(2)])
+    return VGroup(bezel, leds)
+
+
+def stroke_cylinder(w: float = 0.8, h: float = 1.0, color: str = V_TEXT, stroke: float = 1.8) -> VGroup:
+    """A disk or a depot: one outline plus the front lip."""
+    rx, ry = w / 2, w / 5.0
+    by = max(0.02, h / 2 - ry)
+    pts = (_arc_pts(0, by, rx, ry, PI, 0) + [np.array([rx, -by, 0.0])]
+           + _arc_pts(0, -by, rx, ry, 0, -PI) + [np.array([-rx, by, 0.0])])
+    lip = VMobject().set_points_as_corners(_arc_pts(0, by, rx, ry, -PI, 0))
+    lip.set_stroke(color, stroke * 0.75, 0.75)
+    return VGroup(_outline(pts, color, stroke, 0.07), lip)
+
+
+def stroke_bucket(w: float = 1.25, h: float = 1.05, color: str = V_TEXT, stroke: float = 1.8) -> VGroup:
+    """Communal (object) storage: a bucket, one outline plus the near edge of the rim."""
+    ry, bw = w / 5.0, w * 0.70
+    top_y, bot_y = h / 2 - ry, -h / 2 + ry * 0.9
+    pts = (_arc_pts(0, top_y, w / 2, ry, PI, 0) + [np.array([bw / 2, bot_y, 0.0])]
+           + _arc_pts(0, bot_y, bw / 2, ry * 0.85, 0, -PI) + [np.array([-w / 2, top_y, 0.0])])
+    lip = VMobject().set_points_as_corners(_arc_pts(0, top_y, w / 2, ry, -PI, 0))
+    lip.set_stroke(color, stroke * 0.75, 0.75)
+    return VGroup(_outline(pts, color, stroke, 0.09), lip)
+
+
+def dashed_box(mobj, color: str = GRAY_TEXT, buff: float = 0.25, dashes: int = 40) -> DashedVMobject:
+    r = RoundedRectangle(corner_radius=0.14, width=mobj.width + 2 * buff, height=mobj.height + 2 * buff)
+    return DashedVMobject(r.move_to(mobj), num_dashes=dashes).set_stroke(color, 1.2, 0.85)
 
 
 def log_x(v: float, lo: float, hi: float, width: float) -> float:

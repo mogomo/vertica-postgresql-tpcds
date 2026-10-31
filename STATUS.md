@@ -219,6 +219,15 @@ Commits and pushes are done by the owner with commands prepared in the chat.
 
 ## Log
 
+- 2026-10-31 (late night): video revised after the owner's review: smaller type scale and wider margins
+  in every chapter, title rules as long as the title; cold open in two columns (words and
+  title left, the race as two vertical query grids right); s01 hardware sheet in small type,
+  "workstation" instead of "laptop" on screen, 959 million rows on the 102 GB pill; s02 list
+  aligned with the title; s03 chart 30% smaller with the legend below; s08 "PostgreSQL
+  stopped at 30 min"; s10 limits text replaced by a drawing: this test's single node, then
+  a Vertica cluster in Eon Mode (subclusters, depots, communal storage; shapes from the
+  roadmap film), lockup unchanged.
+
 - 2026-10-31 (night): video built from the owner's 11 recordings and music track (pipeline:
   video/audio.py, timeline.py, captions.py, scenes/open.py, scenes/disclaimer.py; film.py
   rewritten). VIDEO.md: ANCHOR lines removed (the clock now comes from one recording per

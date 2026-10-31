@@ -15,7 +15,7 @@ def build(f, ch):
     for _, text in RULES:
         dot = Square(0.11).set_stroke(width=0).set_fill(BRAND_PRIMARY, 1)
         items.add(VGroup(dot, body(text, size=FS_BODY)).arrange(RIGHT, buff=0.3))
-    items.arrange(DOWN, aligned_edge=LEFT, buff=0.42).move_to(LEFT * 1.6 + UP * 0.6)
+    items.arrange(DOWN, aligned_edge=LEFT, buff=0.4).move_to([TITLE_ANCHOR[0] + 0.05, 0.55, 0], aligned_edge=LEFT)
     for (phrase, _), item in zip(RULES[:2], items[:2]):
         f.hold_until(f.cue(ch, phrase))
         f.play(FadeIn(item, shift=RIGHT * 0.2), run_time=0.7)
@@ -25,8 +25,7 @@ def build(f, ch):
     dv = caption("Vertica: Database Designer projections", color=V_TEXT)
     dp = caption("PostgreSQL: analytic settings, primary keys, indexes, VACUUM ANALYZE", color=P_TEXT)
     VGroup(dv, dp).arrange(DOWN, aligned_edge=LEFT, buff=0.12).next_to(items[1], DOWN, buff=0.1, aligned_edge=LEFT).shift(RIGHT * 0.41)
-    items[2].shift(DOWN * 0.7)
-    items[3:].shift(DOWN * 0.7)
+    items[2:].shift(DOWN * 0.6)
     f.play(FadeIn(dv), run_time=0.5)
     f.hold_until(f.cue(ch, "PostgreSQL settings for analytics"))
     f.play(FadeIn(dp), run_time=0.5)
@@ -38,7 +37,7 @@ def build(f, ch):
     # integer division: same question, different answers
     f.hold_until(f.cue(ch, "five queries divide one integer"))
     stage = VGroup(*items, dv, dp)
-    f.play(stage.animate.scale(0.62).to_edge(LEFT, buff=0.7).shift(UP * 0.3), run_time=0.8)
+    f.play(stage.animate.scale(0.7).move_to([TITLE_ANCHOR[0] + 0.05, 0.75, 0], aligned_edge=LEFT), run_time=0.8)
     expr = mono("hd_dep_count / hd_vehicle_count > 1.2", size=FS_CAPTION, color=WHITE_SOFT)
     ex = mono("7 / 2", size=FS_HEAD, color=WHITE_SOFT)
     rv = VGroup(product_label("vertica", FS_CAPTION), mono("= 3.5", size=FS_HEAD, color=V_TEXT)).arrange(RIGHT, buff=0.3)

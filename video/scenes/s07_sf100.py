@@ -10,7 +10,7 @@ def build(f, ch):
     ok = 99 - int(metrics("postgresql", 100)["queries_not_finished"])
     f.hold_until(f.cue(ch, "Vertica's time grew seven times"))
     a = body(f"Vertica: {v10:.0f} s → {v100:.0f} s  (×{v100 / v10:.1f})", size=FS_BODY, color=V_TEXT)
-    a.to_edge(UP, buff=1.5).to_edge(LEFT, buff=0.9)
+    a.to_edge(UP, buff=1.7).align_to([TITLE_ANCHOR[0], 0, 0], LEFT)
     f.play(FadeIn(a, shift=RIGHT * 0.2), run_time=0.7)
     f.hold_until(f.cue(ch, "PostgreSQL finished only"))
     b = body(f"PostgreSQL: {ok} of 99 queries finished within their limits", size=FS_BODY, color=P_TEXT)
@@ -21,14 +21,14 @@ def build(f, ch):
     f.hold_until(f.cue(ch, "The reason is memory"))
     scale = 0.075   # units per GB
     ram = Rectangle(width=61 * 1.074 * scale, height=0.7).set_stroke(WHITE_SOFT, 1.5)
-    ram.move_to([-6.0, -0.4, 0], aligned_edge=LEFT)
+    ram.move_to([TITLE_ANCHOR[0], -0.4, 0], aligned_edge=LEFT)
     rl = caption("machine memory: 61 GiB usable").next_to(ram, UP, buff=0.15, aligned_edge=LEFT)
     vs = int(metrics("vertica", 100)["stored_bytes"]) / 1e9
     ps = int(metrics("postgresql", 100)["stored_bytes"]) / 1e9
     dv = Rectangle(width=vs * scale, height=0.5).set_stroke(width=0).set_fill(V_FILL, 0.95)
-    dv.move_to([-6.0, -1.5, 0], aligned_edge=LEFT)
+    dv.move_to([TITLE_ANCHOR[0], -1.5, 0], aligned_edge=LEFT)
     dp = Rectangle(width=ps * scale, height=0.5).set_stroke(width=0).set_fill(P_FILL, 0.95)
-    dp.move_to([-6.0, -2.55, 0], aligned_edge=LEFT)
+    dp.move_to([TITLE_ANCHOR[0], -2.55, 0], aligned_edge=LEFT)
     edge = DashedLine(ram.get_right() + UP * 0.6, ram.get_right() + DOWN * 2.6).set_stroke(WHITE_SOFT, 1.2)
     f.play(Create(ram), FadeIn(rl), Create(edge), run_time=0.8)
     f.hold_until(f.cue(ch, "Vertica's thirty-nine gigabytes"))
