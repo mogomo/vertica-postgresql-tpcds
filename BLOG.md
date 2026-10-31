@@ -6,8 +6,8 @@ costs nothing to start with. So instead of arguing, I measured it: the same
 decision-support workload, the same data, the same machine, once with Vertica and once
 with PostgreSQL, each set up the way its documentation recommends. This article explains
 how the test was made fair, what came out, and why the two products behave so
-differently. Every script, setting and raw timing is published, so you can repeat the
-test yourself.
+differently. Every script, setting and raw timing is published in the repository
+[vertica-postgresql-tpcds](https://github.com/mogomo/vertica-postgresql-tpcds), so you can repeat the test yourself.
 
 ## The short version
 
@@ -159,7 +159,7 @@ queries that did not finish within a minute, rerun with a 10-minute limit:
 | 4, 11, 74 | customers whose spending grew faster in one channel than in another, year over year | 1.6 - 8.3 s | > 10 min |
 | 14 | items sold in all three channels, by channel | 6.7 s | 121 s |
 
-The query plans show why ([analysis](analysis/README.md)). In query 1,
+The query plans show why ([analysis](https://github.com/mogomo/vertica-postgresql-tpcds/blob/main/analysis/README.md)). In query 1,
 "above their store's average" is a correlated subquery:
 `ctr_total_return > (select avg(...) ... where ctr2.ctr_store_sk = ctr1.ctr_store_sk)`.
 PostgreSQL executes it as a *SubPlan*: for every row of the outer result it scans the
@@ -276,7 +276,7 @@ The measurements line up with the architecture of the two products:
 
 ## Repeat it yourself
 
-Everything is in the repository: installing PostgreSQL, generating the data, the Vertica
+Everything is in the repository, https://github.com/mogomo/vertica-postgresql-tpcds: installing PostgreSQL, generating the data, the Vertica
 physical design, both loads, the power runs with time limits, the answer check, the query
 plans, and the raw timings and monitoring data of every run. One command per scale
 factor runs both products end to end, and every step has a time limit.

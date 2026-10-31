@@ -13,7 +13,7 @@ and SF100, merged into the PostgreSQL power runs with `./tpcds.sh amend`, origin
 as `timings_original.csv`); query 30 run once at SF100 with a 30-minute limit to show what
 the time limits hide; README / RESULTS / BLOG / VIDEO.md / analysis / video scenes
 updated (time-limit section, single-node caveat, "as is" disclaimer, MIT license
-section; silent draft re-rendered, 405.7 s, `video/media/videos/film/480p15/Film.mp4`). These changes are NOT committed yet: commit commands were given in the chat.
+section; silent draft re-rendered, 405.7 s, `video/media/videos/film/480p15/Film.mp4`). Committed and pushed by the owner (7d3407b).
 Repo still private.
 
 | | Vertica SF10 | PostgreSQL SF10 | Vertica SF100 | PostgreSQL SF100 |
@@ -39,7 +39,7 @@ pre-change PostgreSQL queries kept in /data/tpcds/queries/postgresql/sf{10,100}_
 Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds, re-enable the services in
 ~/disabled_for_benchmark.txt) waits for the owner's decision.
 
-**Next (owner):** commit + push the changes (commands in the chat); record the narration
+**Next (owner):** record the narration
 (VIDEO.md, now 11 chapters s00-s10, ~870 words) as `video/assets/narration.mp3`, then in
 video/: `python timeline.py && manim -qh --fps 60 --disable_caching film.py Film`; decide
 host cleanup; making the repo public needs the owner's approval of the results.
@@ -212,6 +212,11 @@ Commits and pushes are done by the owner with commands prepared in the chat.
   is kept.
 
 ## Log
+
+- 2026-10-31 (afternoon): blog prepared for LinkedIn: repository URL added (intro, analysis
+  link, "Repeat it yourself"); the 5 tables and 6 charts rendered as PNG in `work/linkedin/`
+  (git-ignored; LinkedIn articles take neither Markdown tables nor SVG). Publishing waits
+  for the repository to go public (owner's approval).
 
 - 2026-10-31 (late morning): owner committed the full work (c1bd94e) and approved: q41
   rerun with identical text for both products; a 30-minute limit for one query to prove
