@@ -1,0 +1,114 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ------------------------------
+ QUERY PLAN DESCRIPTION:
+ ------------------------------
+
+ explain select  distinct(i_product_name)
+  from item i1
+  where i_manufact_id between 742 and 742+40
+    and exists (select *
+         from item
+         where (i_manufact = i1.i_manufact and
+         ((i_category = 'Women' and
+         (i_color = 'orchid' or i_color = 'papaya') and
+         (i_units = 'Pound' or i_units = 'Lb') and
+         (i_size = 'petite' or i_size = 'medium')
+         ) or
+         (i_category = 'Women' and
+         (i_color = 'burlywood' or i_color = 'navy') and
+         (i_units = 'Bundle' or i_units = 'Each') and
+         (i_size = 'N/A' or i_size = 'extra large')
+         ) or
+         (i_category = 'Men' and
+         (i_color = 'bisque' or i_color = 'azure') and
+         (i_units = 'N/A' or i_units = 'Tsp') and
+         (i_size = 'small' or i_size = 'large')
+         ) or
+         (i_category = 'Men' and
+         (i_color = 'chocolate' or i_color = 'cornflower') and
+         (i_units = 'Bunch' or i_units = 'Gross') and
+         (i_size = 'petite' or i_size = 'medium')
+         ))) or
+        (i_manufact = i1.i_manufact and
+         ((i_category = 'Women' and
+         (i_color = 'salmon' or i_color = 'midnight') and
+         (i_units = 'Oz' or i_units = 'Box') and
+         (i_size = 'petite' or i_size = 'medium')
+         ) or
+         (i_category = 'Women' and
+         (i_color = 'snow' or i_color = 'steel') and
+         (i_units = 'Carton' or i_units = 'Tbl') and
+         (i_size = 'N/A' or i_size = 'extra large')
+         ) or
+         (i_category = 'Men' and
+         (i_color = 'purple' or i_color = 'gainsboro') and
+         (i_units = 'Dram' or i_units = 'Unknown') and
+         (i_size = 'small' or i_size = 'large')
+         ) or
+         (i_category = 'Men' and
+         (i_color = 'metallic' or i_color = 'forest') and
+         (i_units = 'Gram' or i_units = 'Ounce') and
+         (i_size = 'petite' or i_size = 'medium')
+         ))))
+  order by i_product_name
+  limit 100;
+
+ Access Path:
+ +-SELECT  LIMIT 100 [Cost: 2K, Rows: 100] (PATH ID: 0)
+ |  Output Only: 100 tuples
+ | +---> GROUPBY HASH (SORT OUTPUT) (LOCAL RESEGMENT GROUPS) [Cost: 2K, Rows: 520] (PATH ID: 2)
+ | |      Group By: i1.i_product_name
+ | | +---> JOIN HASH [Semi] [Cost: 2K, Rows: 520] (PATH ID: 3)
+ | | |      Join Cond: (VAL(1) = i1.i_manufact)
+ | | |      Materialize at Output: i1.i_product_name
+ | | | +-- Outer -> STORAGE ACCESS for i1 [Cost: 22, Rows: 1K] (PATH ID: 4)
+ | | | |      Projection: tpcds_sf10.item_DBD_14_rep
+ | | | |      Materialize: i1.i_manufact
+ | | | |      Filter: ((i1.i_manufact_id >= 742) AND (i1.i_manufact_id <= 782))
+ | | | |      Runtime Filter: (SIP1(HashJoin): i1.i_manufact)
+ | | | +-- Inner -> SELECT [Cost: 2K, Rows: 12K] (PUSHED GROUPING) (PATH ID: 5)
+ | | | | +---> STORAGE ACCESS for item [Cost: 2K, Rows: 12K] (PATH ID: 6)
+ | | | | |      Projection: tpcds_sf10.item_DBD_13_rep
+ | | | | |      Materialize: item.i_category, item.i_color, item.i_units, item.i_size, item.i_manufact
+ | | | | |      Filter: (((item.i_category = 'Women') AND ((item.i_color = 'orchid') OR (item.i_color = 'papaya')) AND ((item.i_units = 'Pound') OR (item.i_units = 'Lb')) AND ((item.i_size = 'petite') OR (item.i_size = 'medium'))) OR ((item.i_category = 'Women') AND ((item.i_color = 'burlywood') OR (item.i_color = 'navy')) AND ((item.i_units = 'Bundle') OR (item.i_units = 'Each')) AND ((item.i_size = 'N/A') OR (item.i_size = 'extra large'))) OR ((item.i_category = 'Men') AND ((item.i_color = 'bisque') OR (item.i_color = 'azure')) AND ((item.i_units = 'N/A') OR (item.i_units = 'Tsp')) AND ((item.i_size = 'small') OR (item.i_size = 'large'))) OR ((item.i_category = 'Men') AND ((item.i_color = 'chocolate') OR (item.i_color = 'cornflower')) AND ((item.i_units = 'Bunch') OR (item.i_units = 'Gross')) AND ((item.i_size = 'petite') OR (item.i_size = 'medium'))) OR ((item.i_category = 'Women') AND ((item.i_color = 'salmon') OR (item.i_color = 'midnight')) AND ((item.i_units = 'Oz') OR (item.i_units = 'Box')) AND ((item.i_size = 'petite') OR (item.i_size = 'medium'))) OR ((item.i_category = 'Women') AND ((item.i_color = 'snow') OR (item.i_color = 'steel')) AND ((item.i_units = 'Carton') OR (item.i_units = 'Tbl')) AND ((item.i_size = 'N/A') OR (item.i_size = 'extra large'))) OR ((item.i_category = 'Men') AND ((item.i_color = 'purple') OR (item.i_color = 'gainsboro')) AND ((item.i_units = 'Dram') OR (item.i_units = 'Unknown')) AND ((item.i_size = 'small') OR (item.i_size = 'large'))) OR ((item.i_category = 'Men') AND ((item.i_color = 'metallic') OR (item.i_color = 'forest')) AND ((item.i_units = 'Gram') OR (item.i_units = 'Ounce')) AND ((item.i_size = 'petite') OR (item.i_size = 'medium'))))
+
+
+ ------------------------------
+ -----------------------------------------------
+ PLAN: BASE QUERY PLAN (GraphViz Format)
+ -----------------------------------------------
+ digraph G {
+ graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain select  distinct(i_product_name)\n from item i1\n where i_manufact_id between 742 and 742+40 \n   and exists (select *\n        from item\n        where (i_manufact = i1.i_manufact and\n        ((i_category = \'Women\' and \n        (i_color = \'orchid\' or i_color = \'papaya\') and \n        (i_units = \'Pound\' or i_units = \'Lb\') and\n        (i_size = \'petite\' or i_size = \'medium\')\n        ) or\n        (i_category = \'Women\' and\n        (i_color = \'burlywood\' or i_color = \'navy\') and\n        (i_units = \'Bundle\' or i_units = \'Each\') and\n        (i_size = \'N/A\' or i_size = \'extra large\')\n        ) or\n        (i_category = \'Men\' and\n        (i_color = \'bisque\' or i_color = \'azure\') and\n        (i_units = \'N/A\' or i_units = \'Tsp\') and\n        (i_size = \'small\' or i_size = \'large\')\n        ) or\n        (i_category = \'Men\' and\n        (i_color = \'chocolate\' or i_color = \'cornflower\') and\n        (i_units = \'Bunch\' or i_units = \'Gross\') and\n        (i_size = \'petite\' or i_size = \'medium\')\n        ))) or\n       (i_manufact = i1.i_manufact and\n        ((i_category = \'Women\' and \n        (i_color = \'salmon\' or i_color = \'midnight\') and \n        (i_units = \'Oz\' or i_units = \'Box\') and\n        (i_size = \'petite\' or i_size = \'medium\')\n        ) or\n        (i_category = \'Women\' and\n        (i_color = \'snow\' or i_color = \'steel\') and\n        (i_units = \'Carton\' or i_units = \'Tbl\') and\n        (i_size = \'N/A\' or i_size = \'extra large\')\n        ) or\n        (i_category = \'Men\' and\n        (i_color = \'purple\' or i_color = \'gainsboro\') and\n        (i_units = \'Dram\' or i_units = \'Unknown\') and\n        (i_size = \'small\' or i_size = \'large\')\n        ) or\n        (i_category = \'Men\' and\n        (i_color = \'metallic\' or i_color = \'forest\') and\n        (i_units = \'Gram\' or i_units = \'Ounce\') and\n        (i_size = \'petite\' or i_size = \'medium\')\n        ))))\n order by i_product_name\n limit 100;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+ 0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+ 1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+ 2[label = "TopK[PIPELINED]\n Sort: (keys = )\nLIMIT: 100\nOffset: 0\nUnc: Char(50)", color = "green", shape = "box"];
+ 3[label = "ParallelMergeStep: 1 sorted\nCombine\nUnc: Char(50)", color = "green", shape = "box"];
+ 4[label = "GroupByHash(Sort Groups)(Spill): 1 keys\nAggs:\nUnc: Char(50)", color = "green", shape = "box"];
+ 5[label = "StorageUnionStep: item_DBD_14_rep\nLocally Resegment\nUnc: Char(50)", color = "purple", shape = "box"];
+ 6[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\nUnc: Char(50)", color = "brown", shape = "box"];
+ 7[label = "ExprEval: \n  i1.i_product_name\nUnc: Char(50)", color = "brown", shape = "box"];
+ 8[label = "Join: Hash-Join: \n(tpcds_sf10.item x tpcds_sf10.item) using item_DBD_14_rep and subquery (PATH ID: 3)\n[Semi]\n (VAL(1) = i1.i_manufact)\n\nUnc: Char(50)", color = "brown", shape = "box"];
+ 9[label = "ScanStep: item_DBD_14_rep\n((i1.i_manufact_id \>= 742) AND (i1.i_manufact_id \<= 782))\nSIP1(HashJoin): i1.i_manufact\ni_manufact_id RLE (not emitted)\ni_manufact\nUnc: Char(50)", color = "brown", shape = "box"];
+ 10[label = "GroupByHash(Cap Memory): 1 keys\nAggs:\nUnc: Char(50)", color = "green", shape = "box"];
+ 11[label = "StorageUnionStep: item_DBD_13_rep\nUnc: Char(50)", color = "purple", shape = "box"];
+ 12[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\nUnc: Char(50)", color = "brown", shape = "box"];
+ 13[label = "ExprEval: \n  item.i_manufact\nUnc: Char(50)", color = "brown", shape = "box"];
+ 14[label = "ScanStep: item_DBD_13_rep\n(((item.i_category = \'Women\') AND ((item.i_color = \'orchid\') OR (item.i_color = \'papaya\')) AND ((item.i_units = \'Pound\') OR (item.i_units = \'Lb\')) AND ((item.i_size = \'petite\') OR (item.i_size = \'medium\'))) OR ((item.i_category = \'Women\') AND ((item.i_color = \'burlywood\') OR (item.i_color = \'navy\')) AND ((item.i_units = \'Bundle\') OR (item.i_units = \'Each\')) AND ((item.i_size = \'N/A\') OR (item.i_size = \'extra large\'))) OR ((item.i_category = \'Men\') AND ((item.i_color = \'bisque\') OR (item.i_color = \'azure\')) AND ((item.i_units = \'N/A\') OR (item.i_units = \'Tsp\')) AND ((item.i_size = \'small\') OR (item.i_size = \'large\'))) OR ((item.i_category = \'Men\') AND ((item.i_color = \'chocolate\') OR (item.i_color = \'cornflower\')) AND ((item.i_units = \'Bunch\') OR (item.i_units = \'Gross\')) AND ((item.i_size = \'petite\') OR (item.i_size = \'medium\'))) OR ((item.i_category = \'Women\') AND ((item.i_color = \'salmon\') OR (item.i_color = \'midnight\')) AND ((item.i_units = \'Oz\') OR (item.i_units = \'Box\')) AND ((item.i_size = \'petite\') OR (item.i_size = \'medium\'))) OR ((item.i_category = \'Women\') AND ((item.i_color = \'snow\') OR (item.i_color = \'steel\')) AND ((item.i_units = \'Carton\') OR (item.i_units = \'Tbl\')) AND ((item.i_size = \'N/A\') OR (item.i_size = \'extra large\'))) OR ((item.i_category = \'Men\') AND ((item.i_color = \'purple\') OR (item.i_color = \'gainsboro\')) AND ((item.i_units = \'Dram\') OR (item.i_units = \'Unknown\')) AND ((item.i_size = \'small\') OR (item.i_size = \'large\'))) OR ((item.i_category = \'Men\') AND ((item.i_color = \'metallic\') OR (item.i_color = \'forest\')) AND ((item.i_units = \'Gram\') OR (item.i_units = \'Ounce\')) AND ((item.i_size = \'petite\') OR (item.i_size = \'medium\'))))\ni_category RLE (not emitted)\ni_manufact\ni_size (not emitted)\ni_color (not emitted)\ni_units (not emitted)\nUnc: Char(50)", color = "brown", shape = "box"];
+ 1->0 [label = "V[0]",color = "black"];
+ 2->1 [label = "0",color = "blue"];
+ 3->2 [label = "0",color = "blue"];
+ 4->3 [label = "0",color = "blue"];
+ 5->4 [label = "0",color = "blue"];
+ 6->5 [label = "0",color = "blue"];
+ 7->6 [label = "0",color = "blue"];
+ 8->7 [label = "0",color = "blue"];
+ 9->8 [label = "0",color = "blue"];
+ 10->8 [label = "1",color = "blue"];
+ 11->10 [label = "0",color = "blue"];
+ 12->11 [label = "0",color = "blue"];
+ 13->12 [label = "0",color = "blue"];
+ 14->13 [label = "0",color = "blue"];
+ }
+(110 rows)
+

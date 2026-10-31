@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="794" height="346" viewBox="0 0 794 346" role="img" aria-label="Geometric mean of the best time per query (all 99)">
+<style>
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; fill: #52514e; }
+  .ink { fill: #0b0b0b; } .muted { fill: #898781; } .title { font-size: 14px; font-weight: 600; fill: #0b0b0b; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .bg { fill: #fcfcfb; } .val { font-variant-numeric: tabular-nums; }
+  .s0 { fill: #2a78d6; } .s1 { fill: #eb6834; }
+  @media (prefers-color-scheme: dark) {
+    text { fill: #c3c2b7; } .ink, .title { fill: #ffffff; } .muted { fill: #898781; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .bg { fill: #1a1a19; }
+    .s0 { fill: #3987e5; } .s1 { fill: #d95926; }
+  }
+</style>
+<rect class="bg" width="794" height="346"/>
+<text class="title" x="60" y="22">Geometric mean of the best time per query (all 99)</text>
+<rect class="s0" x="60" y="32" width="10" height="10" rx="2"/><text x="74" y="41">Vertica</text>
+<rect class="s1" x="141" y="32" width="10" height="10" rx="2"/><text x="155" y="41">PostgreSQL</text>
+<line class="grid" x1="60" x2="774" y1="276.0" y2="276.0"/><text class="muted val" x="52" y="280.0" text-anchor="end">0</text>
+<line class="grid" x1="60" x2="774" y1="221.0" y2="221.0"/><text class="muted val" x="52" y="225.0" text-anchor="end">10</text>
+<line class="grid" x1="60" x2="774" y1="166.0" y2="166.0"/><text class="muted val" x="52" y="170.0" text-anchor="end">20</text>
+<line class="grid" x1="60" x2="774" y1="111.0" y2="111.0"/><text class="muted val" x="52" y="115.0" text-anchor="end">30</text>
+<line class="grid" x1="60" x2="774" y1="56.0" y2="56.0"/><text class="muted val" x="52" y="60.0" text-anchor="end">40</text>
+<line class="axis" x1="60" x2="774" y1="276" y2="276"/>
+<text class="ink" x="140.0" y="296" text-anchor="middle">SF10</text>
+<path class="s0" d="M80.0,276.0 V276.0 Q80.0,274.2 81.8,274.2 H106.2 Q108.0,274.2 108.0,276.0 V276.0 Z"><title>Vertica, SF10: 0.32 s</title></path><text class="ink val" x="94.0" y="268.2" text-anchor="middle" font-size="11">0.32 s</text>
+<path class="s1" d="M140.0,276.0 V270.0 Q140.0,266.0 144.0,266.0 H164.0 Q168.0,266.0 168.0,270.0 V276.0 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, SF10: ≥ 1.81 s</title></path><text class="ink val" x="154.0" y="260.0" text-anchor="middle" font-size="11">≥ 1.81 s</text>
+<text class="ink" x="300.0" y="296" text-anchor="middle">SF100</text>
+<path class="s0" d="M240.0,276.0 V272.5 Q240.0,268.5 244.0,268.5 H264.0 Q268.0,268.5 268.0,272.5 V276.0 Z"><title>Vertica, SF100: 1.36 s</title></path><text class="ink val" x="254.0" y="262.5" text-anchor="middle" font-size="11">1.36 s</text>
+<path class="s1" d="M300.0,276.0 V104.2 Q300.0,100.2 304.0,100.2 H324.0 Q328.0,100.2 328.0,104.2 V276.0 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, SF100: ≥ 32.0 s</title></path><text class="ink val" x="314.0" y="94.2" text-anchor="middle" font-size="11">≥ 32.0 s</text>
+<text class="muted" x="60" y="338" font-size="11">Same machine, flat files, queries and procedure; lower is better; ≥ = lower bound (queries stopped at their time limit)</text>
+</svg>

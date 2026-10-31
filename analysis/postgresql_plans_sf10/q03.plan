@@ -1,0 +1,26 @@
+                                                            QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=25728.61..25745.72 rows=100 width=91)
+   ->  Incremental Sort  (cost=25728.61..26202.43 rows=2770 width=91)
+         Sort Key: dt.d_year, (sum(store_sales.ss_ext_sales_price)) DESC, item.i_brand_id
+         Presorted Key: dt.d_year
+         ->  GroupAggregate  (cost=25726.43..26111.37 rows=2770 width=91)
+               Group Key: dt.d_year, item.i_brand, item.i_brand_id
+               ->  Gather Merge  (cost=25726.43..26049.05 rows=2770 width=65)
+                     Workers Planned: 2
+                     ->  Sort  (cost=24726.41..24729.30 rows=1154 width=65)
+                           Sort Key: dt.d_year, item.i_brand, item.i_brand_id
+                           ->  Nested Loop  (cost=0.74..24667.72 rows=1154 width=65)
+                                 ->  Nested Loop  (cost=0.44..23741.75 rows=14236 width=65)
+                                       ->  Parallel Seq Scan on item  (cost=0.00..7575.25 rows=50 width=59)
+                                             Filter: (i_manufact_id = 436)
+                                       ->  Index Scan using store_sales_pkey on store_sales  (cost=0.44..320.38 rows=295 width=14)
+                                             Index Cond: (ss_item_sk = item.i_item_sk)
+                                 ->  Memoize  (cost=0.30..0.32 rows=1 width=8)
+                                       Cache Key: store_sales.ss_sold_date_sk
+                                       Cache Mode: logical
+                                       ->  Index Scan using date_dim_pkey on date_dim dt  (cost=0.29..0.31 rows=1 width=8)
+                                             Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                                             Filter: (d_moy = 12)
+(22 rows)
+

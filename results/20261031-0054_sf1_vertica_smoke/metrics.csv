@@ -1,0 +1,42 @@
+metric,value,unit
+product,Vertica,
+product_version,26.3.0-2,
+deployment,"Enterprise mode, 1 node(s)",
+scale_factor,1,
+tables,24,
+total_rows,19557335,rows
+raw_data_bytes,1233684179,bytes
+stored_bytes,365100203,bytes
+compression_ratio,3.38,raw/stored
+index_bytes,0,bytes
+stored_bytes_without_indexes,365100203,bytes
+compression_ratio_without_indexes,3.38,raw/stored
+datagen_seconds,20.427,s
+load_seconds,4.905,s
+load_parallel_tables,4,
+load_throughput,251.5,MB/s raw
+load_rows_per_second,3987224,rows/s
+index_seconds,0.003,s
+stats_seconds,2.241,s
+iterations,1,
+queries,99,
+queries_ok_all_iterations,99,
+queries_not_finished,0,queries
+power_iteration_1_seconds,23.2,s
+power_best_iteration_seconds,23.2,s
+power_best_iteration_is_lower_bound,no,
+power_best_iteration_server_seconds,20.4,s
+geomean_best_iteration_seconds,0.143,s
+power_sum_best_per_query_seconds,23.2,s
+geomean_best_per_query_seconds,0.143,s
+best_per_query_is_lower_bound,no,
+queries_under_1s_best,94,queries
+max_query_memory_acquired_mb,18654,MB
+spill_events_per_iteration,0,events
+machine,Dell Inc. Precision 3591 (laptop),
+cpu,"Intel(R) Core(TM) Ultra 7 165H - 1 socket(s), 16 cores, 22 threads, max 5000 MHz, L3 24 MiB (1 instance)",
+memory,"61.0 GiB RAM, 8.0 GiB swap",
+storage,"953.9G NVMe SSD (BC901 NVMe SK hynix 1024GB), ext4",
+os,"Ubuntu 26.04.1 LTS, kernel 7.0.0-34-generic",
+setting_resource_pool,"benchmark pool tpcds_pool: memorysize=65%, maxmemorysize=none, plannedconcurrency=2, executionparallelism=AUTO",
+setting_projections,"37 projections (24 super-projections), PROJECTIONS=designed",

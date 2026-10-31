@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="666" height="850" viewBox="0 0 666 850" role="img" aria-label="SF10: the 20 slowest queries of Vertica, best time">
+<style>
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; fill: #52514e; }
+  .ink { fill: #0b0b0b; } .muted { fill: #898781; } .title { font-size: 14px; font-weight: 600; fill: #0b0b0b; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .bg { fill: #fcfcfb; } .val { font-variant-numeric: tabular-nums; }
+  .s0 { fill: #2a78d6; } .s1 { fill: #eb6834; }
+  @media (prefers-color-scheme: dark) {
+    text { fill: #c3c2b7; } .ink, .title { fill: #ffffff; } .muted { fill: #898781; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .bg { fill: #1a1a19; }
+    .s0 { fill: #3987e5; } .s1 { fill: #d95926; }
+  }
+</style>
+<rect class="bg" width="666" height="850"/>
+<text class="title" x="56" y="22">SF10: the 20 slowest queries of Vertica, best time</text>
+<rect class="s0" x="56" y="32" width="10" height="10" rx="2"/><text x="70" y="41">Vertica</text>
+<rect class="s1" x="137" y="32" width="10" height="10" rx="2"/><text x="151" y="41">PostgreSQL</text>
+<line class="grid" x1="56.0" x2="56.0" y1="56" y2="816"/><text class="muted val" x="56.0" y="830" text-anchor="middle">0</text>
+<line class="grid" x1="186.0" x2="186.0" y1="56" y2="816"/><text class="muted val" x="186.0" y="830" text-anchor="middle">20</text>
+<line class="grid" x1="316.0" x2="316.0" y1="56" y2="816"/><text class="muted val" x="316.0" y="830" text-anchor="middle">40</text>
+<line class="grid" x1="446.0" x2="446.0" y1="56" y2="816"/><text class="muted val" x="446.0" y="830" text-anchor="middle">60</text>
+<line class="grid" x1="576.0" x2="576.0" y1="56" y2="816"/><text class="muted val" x="576.0" y="830" text-anchor="middle">80</text>
+<line class="axis" x1="56" x2="56" y1="56" y2="816"/>
+<text class="ink" x="48" y="79" text-anchor="end">4</text>
+<path class="s0" d="M56,61 H106.0 Q110.0,61 110.0,65.0 V69.0 Q110.0,73 106.0,73 H56 Z"><title>Vertica, query 4: 8.31 s</title></path><text class="ink val" x="115.0" y="71" font-size="11">8.31 s</text>
+<path class="s1" d="M56,75 H442.0 Q446.0,75 446.0,79.0 V83.0 Q446.0,87 442.0,87 H56 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, query 4: > 60.0 s (stopped at its time limit)</title></path><text class="ink val" x="451.0" y="85" font-size="11">> 60.0 s</text>
+<text class="ink" x="48" y="117" text-anchor="end">78</text>
+<path class="s0" d="M56,99 H101.0 Q105.0,99 105.0,103.0 V107.0 Q105.0,111 101.0,111 H56 Z"><title>Vertica, query 78: 7.54 s</title></path><text class="ink val" x="110.0" y="109" font-size="11">7.54 s</text>
+<path class="s1" d="M56,113 H106.0 Q110.0,113 110.0,117.0 V121.0 Q110.0,125 106.0,125 H56 Z"><title>PostgreSQL, query 78: 8.30 s</title></path><text class="ink val" x="115.0" y="123" font-size="11">8.30 s</text>
+<text class="ink" x="48" y="155" text-anchor="end">14</text>
+<path class="s0" d="M56,137 H95.6 Q99.6,137 99.6,141.0 V145.0 Q99.6,149 95.6,149 H56 Z"><title>Vertica, query 14: 6.71 s</title></path><text class="ink val" x="104.6" y="147" font-size="11">6.71 s</text>
+<path class="s1" d="M56,151 H442.0 Q446.0,151 446.0,155.0 V159.0 Q446.0,163 442.0,163 H56 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, query 14: > 60.0 s (stopped at its time limit)</title></path><text class="ink val" x="451.0" y="161" font-size="11">> 60.0 s</text>
+<text class="ink" x="48" y="193" text-anchor="end">23</text>
+<path class="s0" d="M56,175 H93.2 Q97.2,175 97.2,179.0 V183.0 Q97.2,187 93.2,187 H56 Z"><title>Vertica, query 23: 6.34 s</title></path><text class="ink val" x="102.2" y="185" font-size="11">6.34 s</text>
+<path class="s1" d="M56,189 H306.0 Q310.0,189 310.0,193.0 V197.0 Q310.0,201 306.0,201 H56 Z"><title>PostgreSQL, query 23: 39.1 s</title></path><text class="ink val" x="315.0" y="199" font-size="11">39.1 s</text>
+<text class="ink" x="48" y="231" text-anchor="end">22</text>
+<path class="s0" d="M56,213 H87.3 Q91.3,213 91.3,217.0 V221.0 Q91.3,225 87.3,225 H56 Z"><title>Vertica, query 22: 5.43 s</title></path><text class="ink val" x="96.3" y="223" font-size="11">5.43 s</text>
+<path class="s1" d="M56,227 H231.8 Q235.8,227 235.8,231.0 V235.0 Q235.8,239 231.8,239 H56 Z"><title>PostgreSQL, query 22: 27.7 s</title></path><text class="ink val" x="240.8" y="237" font-size="11">27.7 s</text>
+<text class="ink" x="48" y="269" text-anchor="end">39</text>
+<path class="s0" d="M56,251 H84.2 Q88.2,251 88.2,255.0 V259.0 Q88.2,263 84.2,263 H56 Z"><title>Vertica, query 39: 4.96 s</title></path><text class="ink val" x="93.2" y="261" font-size="11">4.96 s</text>
+<path class="s1" d="M56,265 H234.4 Q238.4,265 238.4,269.0 V273.0 Q238.4,277 234.4,277 H56 Z"><title>PostgreSQL, query 39: 28.1 s</title></path><text class="ink val" x="243.4" y="275" font-size="11">28.1 s</text>
+<text class="ink" x="48" y="307" text-anchor="end">11</text>
+<path class="s0" d="M56,289 H79.4 Q83.4,289 83.4,293.0 V297.0 Q83.4,301 79.4,301 H56 Z"><title>Vertica, query 11: 4.22 s</title></path><text class="ink val" x="88.4" y="299" font-size="11">4.22 s</text>
+<path class="s1" d="M56,303 H442.0 Q446.0,303 446.0,307.0 V311.0 Q446.0,315 442.0,315 H56 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, query 11: > 60.0 s (stopped at its time limit)</title></path><text class="ink val" x="451.0" y="313" font-size="11">> 60.0 s</text>
+<text class="ink" x="48" y="345" text-anchor="end">67</text>
+<path class="s0" d="M56,327 H77.3 Q81.3,327 81.3,331.0 V335.0 Q81.3,339 77.3,339 H56 Z"><title>Vertica, query 67: 3.89 s</title></path><text class="ink val" x="86.3" y="337" font-size="11">3.89 s</text>
+<path class="s1" d="M56,341 H276.0 Q280.0,341 280.0,345.0 V349.0 Q280.0,353 276.0,353 H56 Z"><title>PostgreSQL, query 67: 34.5 s</title></path><text class="ink val" x="285.0" y="351" font-size="11">34.5 s</text>
+<text class="ink" x="48" y="383" text-anchor="end">65</text>
+<path class="s0" d="M56,365 H76.1 Q80.1,365 80.1,369.0 V373.0 Q80.1,377 76.1,377 H56 Z"><title>Vertica, query 65: 3.70 s</title></path><text class="ink val" x="85.1" y="375" font-size="11">3.70 s</text>
+<path class="s1" d="M56,379 H96.0 Q100.0,379 100.0,383.0 V387.0 Q100.0,391 96.0,391 H56 Z"><title>PostgreSQL, query 65: 6.77 s</title></path><text class="ink val" x="105.0" y="389" font-size="11">6.77 s</text>
+<text class="ink" x="48" y="421" text-anchor="end">5</text>
+<path class="s0" d="M56,403 H75.6 Q79.6,403 79.6,407.0 V411.0 Q79.6,415 75.6,415 H56 Z"><title>Vertica, query 5: 3.63 s</title></path><text class="ink val" x="84.6" y="413" font-size="11">3.63 s</text>
+<path class="s1" d="M56,417 H61.9 Q65.9,417 65.9,421.0 V425.0 Q65.9,429 61.9,429 H56 Z"><title>PostgreSQL, query 5: 1.53 s</title></path><text class="ink val" x="70.9" y="427" font-size="11">1.53 s</text>
+<text class="ink" x="48" y="459" text-anchor="end">75</text>
+<path class="s0" d="M56,441 H73.3 Q77.3,441 77.3,445.0 V449.0 Q77.3,453 73.3,453 H56 Z"><title>Vertica, query 75: 3.27 s</title></path><text class="ink val" x="82.3" y="451" font-size="11">3.27 s</text>
+<path class="s1" d="M56,455 H97.1 Q101.1,455 101.1,459.0 V463.0 Q101.1,467 97.1,467 H56 Z"><title>PostgreSQL, query 75: 6.94 s</title></path><text class="ink val" x="106.1" y="465" font-size="11">6.94 s</text>
+<text class="ink" x="48" y="497" text-anchor="end">95</text>
+<path class="s0" d="M56,479 H72.9 Q76.9,479 76.9,483.0 V487.0 Q76.9,491 72.9,491 H56 Z"><title>Vertica, query 95: 3.22 s</title></path><text class="ink val" x="81.9" y="489" font-size="11">3.22 s</text>
+<path class="s1" d="M56,493 H187.4 Q191.4,493 191.4,497.0 V501.0 Q191.4,505 187.4,505 H56 Z"><title>PostgreSQL, query 95: 20.8 s</title></path><text class="ink val" x="196.4" y="503" font-size="11">20.8 s</text>
+<text class="ink" x="48" y="535" text-anchor="end">97</text>
+<path class="s0" d="M56,517 H64.8 Q68.8,517 68.8,521.0 V525.0 Q68.8,529 64.8,529 H56 Z"><title>Vertica, query 97: 1.96 s</title></path><text class="ink val" x="73.8" y="527" font-size="11">1.96 s</text>
+<path class="s1" d="M56,531 H84.2 Q88.2,531 88.2,535.0 V539.0 Q88.2,543 84.2,543 H56 Z"><title>PostgreSQL, query 97: 4.95 s</title></path><text class="ink val" x="93.2" y="541" font-size="11">4.95 s</text>
+<text class="ink" x="48" y="573" text-anchor="end">51</text>
+<path class="s0" d="M56,555 H64.4 Q68.4,555 68.4,559.0 V563.0 Q68.4,567 64.4,567 H56 Z"><title>Vertica, query 51: 1.91 s</title></path><text class="ink val" x="73.4" y="565" font-size="11">1.91 s</text>
+<path class="s1" d="M56,569 H92.6 Q96.6,569 96.6,573.0 V577.0 Q96.6,581 92.6,581 H56 Z"><title>PostgreSQL, query 51: 6.24 s</title></path><text class="ink val" x="101.6" y="579" font-size="11">6.24 s</text>
+<text class="ink" x="48" y="611" text-anchor="end">24</text>
+<path class="s0" d="M56,593 H63.8 Q67.8,593 67.8,597.0 V601.0 Q67.8,605 63.8,605 H56 Z"><title>Vertica, query 24: 1.82 s</title></path><text class="ink val" x="72.8" y="603" font-size="11">1.82 s</text>
+<path class="s1" d="M56,607 H56.6 Q57.2,607 57.2,607.6 V618.4 Q57.2,619 56.6,619 H56 Z"><title>PostgreSQL, query 24: 0.18 s</title></path><text class="ink val" x="62.2" y="617" font-size="11">0.18 s</text>
+<text class="ink" x="48" y="649" text-anchor="end">74</text>
+<path class="s0" d="M56,631 H62.7 Q66.7,631 66.7,635.0 V639.0 Q66.7,643 62.7,643 H56 Z"><title>Vertica, query 74: 1.64 s</title></path><text class="ink val" x="71.7" y="641" font-size="11">1.64 s</text>
+<path class="s1" d="M56,645 H442.0 Q446.0,645 446.0,649.0 V653.0 Q446.0,657 442.0,657 H56 Z" fill-opacity="0.45" stroke="#898781" stroke-dasharray="3 2" stroke-width="1"><title>PostgreSQL, query 74: > 60.0 s (stopped at its time limit)</title></path><text class="ink val" x="451.0" y="655" font-size="11">> 60.0 s</text>
+<text class="ink" x="48" y="687" text-anchor="end">64</text>
+<path class="s0" d="M56,669 H60.5 Q64.5,669 64.5,673.0 V677.0 Q64.5,681 60.5,681 H56 Z"><title>Vertica, query 64: 1.30 s</title></path><text class="ink val" x="69.5" y="679" font-size="11">1.30 s</text>
+<path class="s1" d="M56,683 H63.0 Q67.0,683 67.0,687.0 V691.0 Q67.0,695 63.0,695 H56 Z"><title>PostgreSQL, query 64: 1.70 s</title></path><text class="ink val" x="72.0" y="693" font-size="11">1.70 s</text>
+<text class="ink" x="48" y="725" text-anchor="end">80</text>
+<path class="s0" d="M56,707 H59.8 Q63.5,707 63.5,710.8 V715.2 Q63.5,719 59.8,719 H56 Z"><title>Vertica, query 80: 1.16 s</title></path><text class="ink val" x="68.5" y="717" font-size="11">1.16 s</text>
+<path class="s1" d="M56,721 H63.9 Q67.9,721 67.9,725.0 V729.0 Q67.9,733 63.9,733 H56 Z"><title>PostgreSQL, query 80: 1.83 s</title></path><text class="ink val" x="72.9" y="731" font-size="11">1.83 s</text>
+<text class="ink" x="48" y="763" text-anchor="end">38</text>
+<path class="s0" d="M56,745 H59.4 Q62.7,745 62.7,748.4 V753.6 Q62.7,757 59.4,757 H56 Z"><title>Vertica, query 38: 1.04 s</title></path><text class="ink val" x="67.7" y="755" font-size="11">1.04 s</text>
+<path class="s1" d="M56,759 H94.8 Q98.8,759 98.8,763.0 V767.0 Q98.8,771 94.8,771 H56 Z"><title>PostgreSQL, query 38: 6.58 s</title></path><text class="ink val" x="103.8" y="769" font-size="11">6.58 s</text>
+<text class="ink" x="48" y="801" text-anchor="end">87</text>
+<path class="s0" d="M56,783 H59.3 Q62.6,783 62.6,786.3 V791.7 Q62.6,795 59.3,795 H56 Z"><title>Vertica, query 87: 1.01 s</title></path><text class="ink val" x="67.6" y="793" font-size="11">1.01 s</text>
+<path class="s1" d="M56,797 H95.2 Q99.2,797 99.2,801.0 V805.0 Q99.2,809 95.2,809 H56 Z"><title>PostgreSQL, query 87: 6.65 s</title></path><text class="ink val" x="104.2" y="807" font-size="11">6.65 s</text>
+<text class="muted" x="56" y="844" font-size="11">Best of the iterations, client wall clock per query; > = stopped at its time limit; lower is better</text>
+</svg>

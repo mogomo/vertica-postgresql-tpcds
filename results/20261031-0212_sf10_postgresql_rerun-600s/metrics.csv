@@ -1,0 +1,43 @@
+metric,value,unit
+product,PostgreSQL,
+product_version,18.6 (Ubuntu 18.6-1.pgdg26.04+2),
+deployment,"single server, row store (heap tables)",
+scale_factor,10,
+tables,24,
+total_rows,191496628,rows
+raw_data_bytes,12003207745,bytes
+stored_bytes,22231908352,bytes
+compression_ratio,0.54,raw/stored
+index_bytes,6332391424,bytes
+stored_bytes_without_indexes,15899516928,bytes
+compression_ratio_without_indexes,0.75,raw/stored
+datagen_seconds,56.025,s
+load_seconds,30.435,s
+load_parallel_tables,4,
+load_throughput,394.4,MB/s raw
+load_rows_per_second,6291987,rows/s
+index_seconds,63.224,s
+stats_seconds,97.524,s
+iterations,1,
+queries,8,
+queries_ok_all_iterations,3,
+queries_not_finished,5,queries
+queries_not_finished_list,01:600 04:600 06:600 11:600 74:600,query:limit_s
+power_iteration_1_seconds,4088.4,s
+power_best_iteration_seconds,4088.4,s
+power_best_iteration_is_lower_bound,yes,
+power_best_iteration_server_seconds,1088.0,s
+geomean_best_iteration_seconds,300.607,s
+power_sum_best_per_query_seconds,4088.4,s
+geomean_best_per_query_seconds,463.037,s
+best_per_query_is_lower_bound,yes,
+queries_under_1s_best,0,queries
+spill_bytes_per_iteration,865378578,bytes
+spill_events_per_iteration,2,events
+machine,Dell Inc. Precision 3591 (laptop),
+cpu,"Intel(R) Core(TM) Ultra 7 165H - 1 socket(s), 16 cores, 22 threads, max 5000 MHz, L3 24 MiB (1 instance)",
+memory,"61.0 GiB RAM, 8.0 GiB swap",
+storage,"953.9G NVMe SSD (BC901 NVMe SK hynix 1024GB), ext4",
+os,"Ubuntu 26.04.1 LTS, kernel 7.0.0-34-generic",
+setting_server_settings,"sql/postgresql/tuned.conf: default_statistics_target=1000, effective_cache_size=40GB, hash_mem_multiplier=2, jit=on, max_parallel_workers=22, max_parallel_workers_per_gather=16, random_page_cost=1.1, shared_buffers=10GB, work_mem=256MB",
+setting_indexes,"36 indexes (24 primary keys), PG_INDEXES=yes",

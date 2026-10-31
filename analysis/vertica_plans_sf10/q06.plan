@@ -1,0 +1,177 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                     QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ------------------------------
+ QUERY PLAN DESCRIPTION:
+ ------------------------------
+
+ explain select  a.ca_state state, count(*) cnt
+  from customer_address a
+      ,customer c
+      ,store_sales s
+      ,date_dim d
+      ,item i
+  where       a.ca_address_sk = c.c_current_addr_sk
+  	and c.c_customer_sk = s.ss_customer_sk
+  	and s.ss_sold_date_sk = d.d_date_sk
+  	and s.ss_item_sk = i.i_item_sk
+  	and d.d_month_seq =
+  	     (select distinct (d_month_seq)
+  	      from date_dim
+                where d_year = 2000
+  	        and d_moy = 2 )
+  	and i.i_current_price > 1.2 *
+              (select avg(j.i_current_price)
+  	     from item j
+  	     where j.i_category = i.i_category)
+  group by a.ca_state
+  having count(*) >= 10
+  order by cnt, a.ca_state
+  limit 100;
+
+ Access Path:
+ +-SELECT  LIMIT 100 [Cost: 422K, Rows: 100] (PATH ID: 0)
+ | +---> SORT [Cost: 422K, Rows: 52] (PATH ID: 1)
+ | |      Order: count(*) ASC, a.ca_state ASC
+ | | +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 422K, Rows: 52] (PATH ID: 2)
+ | | |      Aggregates: count(*)
+ | | |      Group By: a.ca_state
+ | | |      Filter: (<SVAR> >= 10)
+ | | | +---> JOIN HASH [Cost: 310K, Rows: 26M] (PATH ID: 3)
+ | | | |      Join Cond: (d.d_month_seq = VAL(6))
+ | | | | +-- Outer -> JOIN HASH [Cost: 188K, Rows: 26M] (PATH ID: 4)
+ | | | | |      Join Cond: (s.ss_item_sk = i.i_item_sk)
+ | | | | |      Materialize at Input: s.ss_item_sk, i.i_category, i.i_current_price, i.i_item_sk
+ | | | | | +-- Outer -> JOIN HASH [Cost: 105K, Rows: 26M] (PATH ID: 5)
+ | | | | | |      Join Cond: (s.ss_sold_date_sk = d.d_date_sk)
+ | | | | | |      Materialize at Input: s.ss_sold_date_sk
+ | | | | | | +-- Outer -> JOIN HASH [Cost: 81K, Rows: 26M] (PATH ID: 6)
+ | | | | | | |      Join Cond: (c.c_customer_sk = s.ss_customer_sk)
+ | | | | | | |      Materialize at Input: c.c_current_addr_sk, c.c_customer_sk
+ | | | | | | | +-- Outer -> STORAGE ACCESS for s [Cost: 66K, Rows: 26M] (PATH ID: 7)
+ | | | | | | | |      Projection: tpcds_sf10.store_sales_DBD_41_rep
+ | | | | | | | |      Materialize: s.ss_customer_sk
+ | | | | | | | |      Filter: (s.ss_sold_date_sk IS NOT NULL)
+ | | | | | | | |      Filter: (s.ss_customer_sk IS NOT NULL)
+ | | | | | | | |      Runtime Filters: (SIP4(HashJoin): s.ss_customer_sk), (SIP3(HashJoin): s.ss_sold_date_sk), (SIP2(HashJoin): s.ss_item_sk)
+ | | | | | | | +-- Inner -> JOIN HASH [Cost: 2K, Rows: 500K (192K RLE)] (PATH ID: 8)
+ | | | | | | | |      Join Cond: (a.ca_address_sk = c.c_current_addr_sk)
+ | | | | | | | | +-- Outer -> STORAGE ACCESS for c [Cost: 924, Rows: 500K (192K RLE)] (PATH ID: 9)
+ | | | | | | | | |      Projection: tpcds_sf10.customer_DBD_23_rep
+ | | | | | | | | |      Materialize: c.c_current_addr_sk
+ | | | | | | | | |      Filter: (c.c_current_addr_sk IS NOT NULL)
+ | | | | | | | | |      Runtime Filter: (SIP5(HashJoin): c.c_current_addr_sk)
+ | | | | | | | | +-- Inner -> STORAGE ACCESS for a [Cost: 643, Rows: 250K] (PATH ID: 10)
+ | | | | | | | | |      Projection: tpcds_sf10.customer_address_DBD_1_rep
+ | | | | | | | | |      Materialize: a.ca_state, a.ca_address_sk
+ | | | | | | +-- Inner -> STORAGE ACCESS for d [Cost: 490, Rows: 73K] (PATH ID: 11)
+ | | | | | | |      Projection: tpcds_sf10.date_dim_DBD_4_rep
+ | | | | | | |      Materialize: d.d_date_sk, d.d_month_seq
+ | | | | | | |      Runtime Filter: (SIP1(HashJoin): d.d_month_seq)
+ | | | | | +-- Inner -> JOIN MERGEJOIN(inputs presorted) [Cost: 860, Rows: 102K] (PATH ID: 12)
+ | | | | | |      Join Cond: (VAL(1) = i.i_category)
+ | | | | | |      Join Filter: (i.i_current_price > (1.2 * VAL(7)))
+ | | | | | | +-- Outer -> STORAGE ACCESS for i [Cost: 265, Rows: 102K] (PATH ID: 13)
+ | | | | | | |      Projection: tpcds_sf10.item_DBD_13_rep
+ | | | | | | |      Materialize: i.i_category, i.i_current_price
+ | | | | | | |      Runtime Filter: (SIP6(MergeJoin): i.i_category)
+ | | | | | | +-- Inner -> SELECT [Cost: 430, Rows: 11] (PATH ID: 14)
+ | | | | | | | +---> GROUPBY PIPELINED [Cost: 430, Rows: 11] (PATH ID: 15)
+ | | | | | | | |      Aggregates: sum_float(j.i_current_price), count(j.i_current_price)
+ | | | | | | | |      Group By: j.i_category
+ | | | | | | | | +---> STORAGE ACCESS for j [Cost: 265, Rows: 102K] (PATH ID: 16)
+ | | | | | | | | |      Projection: tpcds_sf10.item_DBD_13_rep
+ | | | | | | | | |      Materialize: j.i_category, j.i_current_price
+ | | | | +-- Inner -> SELECT [Cost: 23, Rows: 1] (PATH ID: 17)
+ | | | | | +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 23, Rows: 30] (PATH ID: 18)
+ | | | | | |      Group By: date_dim.d_month_seq
+ | | | | | | +---> STORAGE ACCESS for date_dim [Cost: 22, Rows: 30] (PATH ID: 19)
+ | | | | | | |      Projection: tpcds_sf10.date_dim_DBD_4_rep
+ | | | | | | |      Materialize: date_dim.d_month_seq
+ | | | | | | |      Filter: (date_dim.d_year = 2000)
+ | | | | | | |      Filter: (date_dim.d_moy = 2)
+
+
+ ------------------------------
+ -----------------------------------------------
+ PLAN: BASE QUERY PLAN (GraphViz Format)
+ -----------------------------------------------
+ digraph G {
+ graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain select  a.ca_state state, count(*) cnt\n from customer_address a\n     ,customer c\n     ,store_sales s\n     ,date_dim d\n     ,item i\n where       a.ca_address_sk = c.c_current_addr_sk\n 	and c.c_customer_sk = s.ss_customer_sk\n 	and s.ss_sold_date_sk = d.d_date_sk\n 	and s.ss_item_sk = i.i_item_sk\n 	and d.d_month_seq = \n 	     (select distinct (d_month_seq)\n 	      from date_dim\n               where d_year = 2000\n 	        and d_moy = 2 )\n 	and i.i_current_price \> 1.2 * \n             (select avg(j.i_current_price) \n 	     from item j \n 	     where j.i_category = i.i_category)\n group by a.ca_state\n having count(*) \>= 10\n order by cnt, a.ca_state \n limit 100;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+ 0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+ 1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+ 2[label = "TopK[PIPELINED]\n Sort: (keys = )\nLIMIT: 100\nOffset: 0\nUnc: Char(2)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 3[label = "ExprEval: \n  a.ca_state\n  \<SVAR\>\nUnc: Char(2)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 4[label = "Sort: (keys = A,A)\nUnc: Integer(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 5[label = "ExprEval: \n  count(*)\n  a.ca_state\nUnc: Integer(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 6[label = "ParallelUnionStep: \nCombine\nUnc: Char(2)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 7[label = "FilterStep: \n(\<SVAR\> \>= 10)\nUnc: Char(2)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 8[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(*)\nUnc: Char(2)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 9[label = "StorageUnionStep: store_sales_DBD_41_rep\nLocally Resegment\nUnc: Char(2)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 10[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(*)\nUnc: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 11[label = "ExprEval: \n  a.ca_state\n  1\nUnc: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 12[label = "Join: Hash-Join: \n(tpcds_sf10.date_dim x tpcds_sf10.date_dim) using previous join and subquery (PATH ID: 3)\n (d.d_month_seq = VAL(6))\n\nUnc: Char(2)", color = "brown", shape = "box"];
+ 13[label = "Join: Hash-Join: \n(tpcds_sf10.store_sales x tpcds_sf10.item) using previous join and previous join (PATH ID: 4)\n\nUnc: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 14[label = "Join: Hash-Join: \n(tpcds_sf10.store_sales x tpcds_sf10.date_dim) using previous join and date_dim_DBD_4_rep (PATH ID: 5)\n\nUnc: Char(2)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 15[label = "Join: Hash-Join: \n(tpcds_sf10.store_sales x tpcds_sf10.customer) using store_sales_DBD_41_rep and previous join (PATH ID: 6)\n\nUnc: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 16[label = "ScanStep: store_sales_DBD_41_rep\n(s.ss_sold_date_sk IS NOT NULL)\n(s.ss_customer_sk IS NOT NULL)\nSIP4(HashJoin): s.ss_customer_sk\nSIP3(HashJoin): s.ss_sold_date_sk\nSIP2(HashJoin): s.ss_item_sk\nss_sold_date_sk RLE (not emitted)\nss_item_sk (not emitted)\nss_customer_sk\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 17[label = "StorageUnionStep: customer_DBD_23_rep\nRLE: Char(2)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 18[label = "Join: Hash-Join: \n(tpcds_sf10.customer x tpcds_sf10.customer_address) using customer_DBD_23_rep and customer_address_DBD_1_rep (PATH ID: 8)\n\nRLE: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 19[label = "ScanStep: customer_DBD_23_rep\n(c.c_current_addr_sk IS NOT NULL)\nSIP5(HashJoin): c.c_current_addr_sk\nc_current_addr_sk RLE\nRLE: Integer(8)", color = "brown", shape = "box"];
+ 20[label = "StorageUnionStep: customer_address_DBD_1_rep\nRLE: Char(2)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 21[label = "ScanStep: customer_address_DBD_1_rep\nca_gmt_offset RLE (not emitted)\nca_state RLE\nca_address_sk\nRLE: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 22[label = "StorageUnionStep: date_dim_DBD_4_rep\nRLE: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 23[label = "ScanStep: date_dim_DBD_4_rep\nSIP1(HashJoin): d.d_month_seq\nd_year RLE (not emitted)\nd_date_sk RLE\nd_month_seq\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 24[label = "StorageUnionStep: item_DBD_13_rep\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 25[label = "Join: Merge-Join: \n(tpcds_sf10.item x tpcds_sf10.item) using item_DBD_13_rep and subquery (PATH ID: 12)\n (VAL(1) = i.i_category)\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 26[label = "ScanStep: item_DBD_13_rep\nSIP6(MergeJoin): i.i_category\ni_category RLE\ni_current_price\nRLE: Char(50)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 27[label = "ExprEval: \n  (\<SVAR\> / float8(\<SVAR\>))\n  j.i_category\nUnc: Float(8)\nUnc: Char(50)", color = "green", shape = "box"];
+ 28[label = "GroupByPipe: 1 keys\nAggs:\n  sum_float(j.i_current_price)\n  count(j.i_current_price)\nUnc: Char(50)\nUnc: Float(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 29[label = "StorageMergeStep[ee5]: item_DBD_13_rep; 1 sorted\nUnc: Char(50)\nUnc: Float(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 30[label = "GroupByPipe: 1 keys\nAggs:\n  sum_float(j.i_current_price)\n  count(j.i_current_price)\nUnc: Char(50)\nUnc: Float(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 31[label = "ExprEval: \n  j.i_category\n  j.i_current_price\n  j.i_current_price\nRLE: Char(50)\nUnc: Numeric(7,2)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 32[label = "ScanStep: item_DBD_13_rep\ni_category RLE\ni_current_price\nRLE: Char(50)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 33[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+ 34[label = "GroupByHash(Spill): 1 keys\nAggs:\nUnc: Integer(8)", color = "green", shape = "box"];
+ 35[label = "StorageUnionStep: date_dim_DBD_4_rep\nLocally Resegment\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 36[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 37[label = "ScanStep: date_dim_DBD_4_rep\n(date_dim.d_year = 2000)\n(date_dim.d_moy = 2)\nd_year RLE (not emitted)\nd_moy RLE (not emitted)\nd_month_seq\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+ 2->1 [label = "0",color = "blue"];
+ 3->2 [label = "0",color = "blue"];
+ 4->3 [label = "0",color = "blue"];
+ 5->4 [label = "0",color = "blue"];
+ 6->5 [label = "0",color = "blue"];
+ 7->6 [label = "0",color = "blue"];
+ 8->7 [label = "0",color = "blue"];
+ 9->8 [label = "0",color = "blue"];
+ 10->9 [label = "0",color = "blue"];
+ 11->10 [label = "0",color = "blue"];
+ 12->11 [label = "0",color = "blue"];
+ 13->12 [label = "0",color = "blue"];
+ 14->13 [label = "0",color = "blue"];
+ 15->14 [label = "0",color = "blue"];
+ 16->15 [label = "0",color = "blue"];
+ 17->15 [label = "1",color = "blue"];
+ 18->17 [label = "0",color = "blue"];
+ 19->18 [label = "0",color = "blue"];
+ 20->18 [label = "1",color = "blue"];
+ 21->20 [label = "0",color = "blue"];
+ 22->14 [label = "1",color = "blue"];
+ 23->22 [label = "0",color = "blue"];
+ 24->13 [label = "1",color = "blue"];
+ 25->24 [label = "0",color = "blue"];
+ 26->25 [label = "0",color = "blue"];
+ 27->25 [label = "1",color = "blue"];
+ 28->27 [label = "0",color = "blue"];
+ 29->28 [label = "0",color = "blue"];
+ 30->29 [label = "0",color = "blue"];
+ 31->30 [label = "0",color = "blue"];
+ 32->31 [label = "0",color = "blue"];
+ 33->12 [label = "1",color = "blue"];
+ 34->33 [label = "0",color = "blue"];
+ 35->34 [label = "0",color = "blue"];
+ 36->35 [label = "0",color = "blue"];
+ 37->36 [label = "0",color = "blue"];
+ }
+(173 rows)
+

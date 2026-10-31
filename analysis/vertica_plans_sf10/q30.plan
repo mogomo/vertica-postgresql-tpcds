@@ -1,0 +1,181 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ------------------------------
+ QUERY PLAN DESCRIPTION:
+ ------------------------------
+
+ explain with customer_total_return as
+  (select wr_returning_customer_sk as ctr_customer_sk
+         ,ca_state as ctr_state,
+  	sum(wr_return_amt) as ctr_total_return
+  from web_returns
+      ,date_dim
+      ,customer_address
+  where wr_returned_date_sk = d_date_sk
+    and d_year =2002
+    and wr_returning_addr_sk = ca_address_sk
+  group by wr_returning_customer_sk
+          ,ca_state)
+   select  c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
+        ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address
+        ,c_last_review_date_sk,ctr_total_return
+  from customer_total_return ctr1
+      ,customer_address
+      ,customer
+  where ctr1.ctr_total_return > (select avg(ctr_total_return)*1.2
+  			  from customer_total_return ctr2
+                   	  where ctr1.ctr_state = ctr2.ctr_state)
+        and ca_address_sk = c_current_addr_sk
+        and ca_state = 'IL'
+        and ctr1.ctr_customer_sk = c_customer_sk
+  order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
+                   ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address
+                   ,c_last_review_date_sk,ctr_total_return
+ limit 100;
+
+ Access Path:
+ +-SELECT  LIMIT 100 [Cost: 26K, Rows: 100] (PATH ID: 0)
+ |  Output Only: 100 tuples
+ | +---> SORT [TOPK] [Cost: 26K, Rows: 100] (PATH ID: 1)
+ | |      Order: customer.c_customer_id ASC, customer.c_salutation ASC, customer.c_first_name ASC, customer.c_last_name ASC, customer.c_preferred_cust_flag ASC, customer.c_birth_day ASC, customer.c_birth_month ASC, customer.c_birth_year ASC, customer.c_birth_country ASC, customer.c_login ASC, customer.c_email_address ASC, customer.c_last_review_date_sk ASC, ctr1.ctr_total_return ASC
+ | |      Output Only: 100 tuples
+ | | +---> JOIN HASH [Cost: 26K, Rows: 100] (PATH ID: 2)
+ | | |      Join Cond: (ctr1.ctr_state = VAL(1))
+ | | |      Join Filter: (ctr1.ctr_total_return > VAL(4))
+ | | |      Materialize at Output: customer.c_customer_id, customer.c_salutation, customer.c_first_name, customer.c_last_name, customer.c_preferred_cust_flag, customer.c_birth_day, customer.c_birth_month, customer.c_birth_year, customer.c_birth_country, customer.c_login, customer.c_email_address, customer.c_last_review_date_sk
+ | | | +-- Outer -> JOIN MERGEJOIN(inputs presorted) [Cost: 10K, Rows: 100] (PATH ID: 3)
+ | | | |      Join Cond: (ctr1.ctr_customer_sk = customer.c_customer_sk)
+ | | | |      Materialize at Input: customer.c_customer_sk
+ | | | | +-- Outer -> JOIN HASH [Cost: 1K, Rows: 15K] (PATH ID: 4)
+ | | | | |      Join Cond: (customer_address.ca_address_sk = customer.c_current_addr_sk)
+ | | | | | +-- Outer -> STORAGE ACCESS for customer [Cost: 1K, Rows: 500K] (PATH ID: 5)
+ | | | | | |      Projection: tpcds_sf10.customer_DBD_21_rep
+ | | | | | |      Materialize: customer.c_current_addr_sk
+ | | | | | |      Filter: (customer.c_current_addr_sk IS NOT NULL)
+ | | | | | |      Runtime Filters: (SIP5(HashJoin): customer.c_current_addr_sk), (SIP4(MergeJoin): customer.c_customer_sk), (SIP6(TopK): customer.c_customer_id)
+ | | | | | +-- Inner -> STORAGE ACCESS for customer_address [Cost: 55, Rows: 8K] (PATH ID: 6)
+ | | | | | |      Projection: tpcds_sf10.customer_address_DBD_1_rep
+ | | | | | |      Materialize: customer_address.ca_address_sk
+ | | | | | |      Filter: (customer_address.ca_state = 'IL')
+ | | | | +-- Inner -> TEMP RELATION ACCESS for TREL3 [Cost: 8K, Rows: 3K] (PATH ID: 7)
+ | | | | |      Filter: (ctr1.ctr_customer_sk IS NOT NULL)
+ | | | | |      Runtime Filter: (SIP3(HashJoin): ctr1.ctr_state)
+ | | | | |      Path to compute TREL3 (printed once):
+ | | | | | +---> SELECT (TREL3) [Cost: 8K, Rows: 3K] (PATH ID: 8)
+ | | | | | | +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 8K, Rows: 3K] (PATH ID: 9)
+ | | | | | | |      Aggregates: sum(web_returns.wr_return_amt)
+ | | | | | | |      Group By: web_returns.wr_returning_customer_sk, customer_address.ca_state
+ | | | | | | | +---> JOIN HASH [Cost: 8K, Rows: 3K] (PATH ID: 10)
+ | | | | | | | |      Join Cond: (web_returns.wr_returning_addr_sk = customer_address.ca_address_sk)
+ | | | | | | | |      Materialize at Input: web_returns.wr_returning_addr_sk
+ | | | | | | | |      Materialize at Output: web_returns.wr_returning_customer_sk, web_returns.wr_return_amt
+ | | | | | | | | +-- Outer -> JOIN HASH [Cost: 3K, Rows: 3K] (PATH ID: 11)
+ | | | | | | | | |      Join Cond: (web_returns.wr_returned_date_sk = date_dim.d_date_sk)
+ | | | | | | | | | +-- Outer -> STORAGE ACCESS for web_returns [Cost: 3K, Rows: 656K] (PATH ID: 12)
+ | | | | | | | | | |      Projection: tpcds_sf10.web_returns_DBD_33_rep
+ | | | | | | | | | |      Materialize: web_returns.wr_returned_date_sk
+ | | | | | | | | | |      Filter: (web_returns.wr_returned_date_sk IS NOT NULL)
+ | | | | | | | | | |      Filter: (web_returns.wr_returning_addr_sk IS NOT NULL)
+ | | | | | | | | | |      Runtime Filters: (SIP2(HashJoin): web_returns.wr_returned_date_sk), (SIP1(HashJoin): web_returns.wr_returning_addr_sk)
+ | | | | | | | | | +-- Inner -> STORAGE ACCESS for date_dim [Cost: 20, Rows: 367] (PATH ID: 13)
+ | | | | | | | | | |      Projection: tpcds_sf10.date_dim_DBD_5_rep
+ | | | | | | | | | |      Materialize: date_dim.d_date_sk
+ | | | | | | | | | |      Filter: (date_dim.d_year = 2002)
+ | | | | | | | | +-- Inner -> STORAGE ACCESS for customer_address [Cost: 643, Rows: 250K] (PATH ID: 14)
+ | | | | | | | | |      Projection: tpcds_sf10.customer_address_DBD_1_rep
+ | | | | | | | | |      Materialize: customer_address.ca_state, customer_address.ca_address_sk
+ | | | +-- Inner -> SELECT [Cost: 6K, Rows: 1] (PATH ID: 15)
+ | | | | +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 6K, Rows: 1] (PATH ID: 16)
+ | | | | |      Aggregates: sum_float(ctr2.ctr_total_return), count(ctr2.ctr_total_return)
+ | | | | |      Group By: ctr2.ctr_state
+ | | | | | +---> TEMP RELATION ACCESS for TREL3 [Cost: 6K, Rows: 3K] (PATH ID: 17)
+
+
+ ------------------------------
+ -----------------------------------------------
+ PLAN: BASE QUERY PLAN (GraphViz Format)
+ -----------------------------------------------
+ digraph G {
+ graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+ 0[label = "Section 0: Inputs[1]", color = "black", shape = "box"];
+ 1[label = "Section 1", color = "black", shape = "box"];
+ 1->0 [label = "Req",color = "black"];
+ }
+ digraph G {
+ graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain with customer_total_return as\n (select wr_returning_customer_sk as ctr_customer_sk\n        ,ca_state as ctr_state, \n 	sum(wr_return_amt) as ctr_total_return\n from web_returns\n     ,date_dim\n     ,customer_address\n where wr_returned_date_sk = d_date_sk \n   and d_year =2002\n   and wr_returning_addr_sk = ca_address_sk \n group by wr_returning_customer_sk\n         ,ca_state)\n  select  c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag\n       ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address\n       ,c_last_review_date_sk,ctr_total_return\n from customer_total_return ctr1\n     ,customer_address\n     ,customer\n where ctr1.ctr_total_return \> (select avg(ctr_total_return)*1.2\n 			  from customer_total_return ctr2 \n                  	  where ctr1.ctr_state = ctr2.ctr_state)\n       and ca_address_sk = c_current_addr_sk\n       and ca_state = \'IL\'\n       and ctr1.ctr_customer_sk = c_customer_sk\n order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag\n                  ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address\n                  ,c_last_review_date_sk,ctr_total_return\nlimit 100;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+ 0[label = "Root \nOutBlk=[UncTuple(13)]", color = "green", shape = "house"];
+ 1[label = "NewEENode \nOutBlk=[UncTuple(13)]", color = "green", shape = "box"];
+ 2[label = "TopK[PIPELINED]\n Sort: (keys = )\nLIMIT: 100\nOffset: 0\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 3[label = "ExprEval: \n  customer.c_customer_id\n  customer.c_salutation\n  customer.c_first_name\n  customer.c_last_name\n  customer.c_preferred_cust_flag\n  customer.c_birth_day\n  customer.c_birth_month\n  customer.c_birth_year\n  customer.c_birth_country\n  customer.c_login\n  customer.c_email_address\n  customer.c_last_review_date_sk\n  ctr1.ctr_total_return\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 4[label = "TopK[HEAP]\n Sort: (keys = Ax13,Nx4)\nLIMIT: 100\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Numeric(7,2)\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Float(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 5[label = "ExprEval: \n  customer.c_customer_id\n  customer.c_salutation\n  customer.c_first_name\n  customer.c_last_name\n  customer.c_preferred_cust_flag\n  customer.c_birth_day\n  customer.c_birth_month\n  customer.c_birth_year\n  customer.c_birth_country\n  customer.c_login\n  customer.c_email_address\n  customer.c_last_review_date_sk\n  ctr1.ctr_total_return\n  ctr1.ctr_customer_sk\n  ctr1.ctr_state\n  VAL(4)\n  VAL(4)\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Numeric(7,2)\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Float(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 6[label = "StorageUnionStep: customer_DBD_21_rep\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Float(8)\nUnc: Char(2)", color = "purple", shape = "box"];
+ 7[label = "Join: Hash-Join: \n(Temp Relation 3 x tpcds_sf10.customer_address) using previous join and subquery (PATH ID: 2)\n (ctr1.ctr_state = VAL(1))\n\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)\nUnc: Char(16)\nUnc: Char(10)\nUnc: Char(20)\nUnc: Char(30)\nUnc: Char(1)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(20)\nUnc: Char(13)\nUnc: Char(50)\nUnc: Integer(8)\nUnc: Float(8)\nUnc: Char(2)", color = "brown", shape = "box"];
+ 8[label = "Join: Merge-Join: \n(tpcds_sf10.customer x Temp Relation 3) using previous join and TempRel access (PATH ID: 3)\n\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 9[label = "Join: Hash-Join: \n(tpcds_sf10.customer x tpcds_sf10.customer_address) using customer_DBD_21_rep and customer_address_DBD_1_rep (PATH ID: 4)\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 10[label = "ScanStep: customer_DBD_21_rep\n(customer.c_current_addr_sk IS NOT NULL)\nSIP5(HashJoin): customer.c_current_addr_sk\nSIP4(MergeJoin): customer.c_customer_sk\nSIP6(TopK): customer.c_customer_id\nc_customer_sk (not emitted)\nc_current_addr_sk\nc_customer_id (not emitted)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 11[label = "StorageUnionStep: customer_address_DBD_1_rep\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 12[label = "ScanStep: customer_address_DBD_1_rep\n(customer_address.ca_state = \'IL\')\nca_state RLE (not emitted)\nca_address_sk\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 13[label = "FilterStep: \n(ctr1.ctr_customer_sk IS NOT NULL)\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 14[label = "TempRelAccess 3; 2 sorted\n\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 15[label = "ParallelUnionStep: \nCombine\nUnc: Float(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 16[label = "ExprEval: \n  ((\<SVAR\> / float8(\<SVAR\>)) * 1.2)\n  ctr2.ctr_state\nUnc: Float(8)\nUnc: Char(2)", color = "green", shape = "box"];
+ 17[label = "GroupByHash(Spill): 1 keys\nAggs:\n  sum_float(ctr2.ctr_total_return)\n  count(ctr2.ctr_total_return)\nUnc: Char(2)\nUnc: Float(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+ 18[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Char(2)\nUnc: Numeric(7,2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 19[label = "ExprEval: \n  ctr2.ctr_state\n  ctr2.ctr_total_return\n  ctr2.ctr_total_return\nUnc: Char(2)\nUnc: Numeric(7,2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 20[label = "ExprEval: \n  ctr2.ctr_state\n  ctr2.ctr_total_return\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 21[label = "TempRelAccess 3; 2 sorted\n\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 1->0 [label = "V[0] C=13",color = "black",style="bold", arrowtail="inv"];
+ 2->1 [label = "0",color = "blue"];
+ 3->2 [label = "0",color = "blue"];
+ 4->3 [label = "0",color = "blue"];
+ 5->4 [label = "0",color = "blue"];
+ 6->5 [label = "0",color = "blue"];
+ 7->6 [label = "0",color = "blue"];
+ 8->7 [label = "0",color = "blue"];
+ 9->8 [label = "0",color = "blue"];
+ 10->9 [label = "0",color = "blue"];
+ 11->9 [label = "1",color = "blue"];
+ 12->11 [label = "0",color = "blue"];
+ 13->8 [label = "1",color = "blue"];
+ 14->13 [label = "0",color = "blue"];
+ 15->7 [label = "1",color = "blue"];
+ 16->15 [label = "0",color = "blue"];
+ 17->16 [label = "0",color = "blue"];
+ 18->17 [label = "0",color = "blue"];
+ 19->18 [label = "0",color = "blue"];
+ 20->19 [label = "0",color = "blue"];
+ 21->20 [label = "0",color = "blue"];
+ }
+ digraph G {
+ graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: explain with customer_total_return as\n (select wr_returning_customer_sk as ctr_customer_sk\n        ,ca_state as ctr_state, \n 	sum(wr_return_amt) as ctr_total_return\n from web_returns\n     ,date_dim\n     ,customer_address\n where wr_returned_date_sk = d_date_sk \n   and d_year =2002\n   and wr_returning_addr_sk = ca_address_sk \n group by wr_returning_customer_sk\n         ,ca_state)\n  select  c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag\n       ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address\n       ,c_last_review_date_sk,ctr_total_return\n from customer_total_return ctr1\n     ,customer_address\n     ,customer\n where ctr1.ctr_total_return \> (select avg(ctr_total_return)*1.2\n 			  from customer_total_return ctr2 \n                  	  where ctr1.ctr_state = ctr2.ctr_state)\n       and ca_address_sk = c_current_addr_sk\n       and ca_state = \'IL\'\n       and ctr1.ctr_customer_sk = c_customer_sk\n order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag\n                  ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address\n                  ,c_last_review_date_sk,ctr_total_return\nlimit 100;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+ 0[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+ 1[label = "TempRelWrite 3; 2 sorted\n\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 2[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 3[label = "GroupByHash(Spill): 2 keys\nAggs:\n  sum(web_returns.wr_return_amt)\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "green", shape = "box"];
+ 4[label = "StorageUnionStep: web_returns_DBD_33_rep\nLocally Resegment\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "purple", shape = "box"];
+ 5[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  sum(web_returns.wr_return_amt)\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 6[label = "ExprEval: \n  web_returns.wr_returning_customer_sk\n  customer_address.ca_state\n  web_returns.wr_return_amt\nUnc: Integer(8)\nUnc: Char(2)\nUnc: Numeric(7,2)", color = "brown", shape = "box"];
+ 7[label = "Join: Hash-Join: \n(tpcds_sf10.web_returns x tpcds_sf10.customer_address) using previous join and customer_address_DBD_1_rep (PATH ID: 10)\n\nUnc: Integer(8)\nUnc: Numeric(7,2)\nUnc: Char(2)", color = "brown", shape = "box"];
+ 8[label = "Join: Hash-Join: \n(tpcds_sf10.web_returns x tpcds_sf10.date_dim) using web_returns_DBD_33_rep and date_dim_DBD_5_rep (PATH ID: 11)\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 9[label = "ScanStep: web_returns_DBD_33_rep\n(web_returns.wr_returned_date_sk IS NOT NULL)\n(web_returns.wr_returning_addr_sk IS NOT NULL)\nSIP2(HashJoin): web_returns.wr_returned_date_sk\nSIP1(HashJoin): web_returns.wr_returning_addr_sk\nwr_returned_date_sk RLE\nwr_returning_addr_sk (not emitted)\nRLE: Integer(8)", color = "brown", shape = "box"];
+ 10[label = "StorageUnionStep: date_dim_DBD_5_rep\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 11[label = "ScanStep: date_dim_DBD_5_rep\n(date_dim.d_year = 2002)\nd_year RLE (not emitted)\nd_date_sk\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 12[label = "StorageUnionStep: customer_address_DBD_1_rep\nRLE: Char(2)\nUnc: Integer(8)", color = "purple", shape = "box"];
+ 13[label = "ScanStep: customer_address_DBD_1_rep\nca_gmt_offset RLE (not emitted)\nca_state RLE\nca_address_sk\nRLE: Char(2)\nUnc: Integer(8)", color = "brown", shape = "box"];
+ 1->0 [label = "0",color = "blue"];
+ 2->1 [label = "0",color = "blue"];
+ 3->2 [label = "0",color = "blue"];
+ 4->3 [label = "0",color = "blue"];
+ 5->4 [label = "0",color = "blue"];
+ 6->5 [label = "0",color = "blue"];
+ 7->6 [label = "0",color = "blue"];
+ 8->7 [label = "0",color = "blue"];
+ 9->8 [label = "0",color = "blue"];
+ 10->8 [label = "1",color = "blue"];
+ 11->10 [label = "0",color = "blue"];
+ 12->7 [label = "1",color = "blue"];
+ 13->12 [label = "0",color = "blue"];
+ }
+(177 rows)
+

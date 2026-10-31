@@ -4,11 +4,42 @@ Handoff notes for the next working session. Host address, credentials and local 
 are kept outside the repository in `config.env` (git-ignored) - read it together with
 this file.
 
-## Where we are (2026-10-30, 23:30 - read this first)
+## Where we are (2026-10-31, 09:00 - read this first)
 
-**State:** project defined and approved, nothing built or run yet. This folder holds
-only this file, `.gitignore` and the local `config.env`. The GitHub repository does
-not exist yet (the owner creates it; see "Repository" below).
+**State:** all benchmark runs done (SF1 smoke + answer check, SF10 and SF100 for both
+products, SF10 10-minute rerun). Written: README.md (rules, results, how to repeat, query
+changes, answer check), RESULTS.md (full results and analysis), COMPARISON.md + charts/,
+analysis/ (EXPLAIN plans of both products for the extreme queries, q41 measurement,
+answer-check reports), BLOG.md (final draft), VIDEO.md (narration, environment sheet,
+numbers with sources), video/ (manim project: film.py, timeline.py, kit.py, scenes s00-s09;
+draft rendered silent at 480p to `video/media/videos/film/480p15/Film.mp4`, git-ignored).
+Nothing committed yet: commit commands given to the owner in the chat. Repo still private
+(GitHub API 404 on 2026-10-31).
+
+| | Vertica SF10 | PostgreSQL SF10 | Vertica SF100 | PostgreSQL SF100 |
+|---|---:|---:|---:|---:|
+| best iteration | 94.4 s | >= 855.8 s (8 over 60 s) | 663.8 s | >= 5841.9 s (57 over limit) |
+| COPY / indexes / statistics | 33 / - / 3.5 s | 30 / 63 / 98 s | 388 / - / 11 s | 499 / 1099 / 1845 s |
+| size (flat 12.0 / 102.5 GB) | 4.07 GB | 22.2 GB | 39.2 GB | 147.5 GB |
+
+Host state: VDB holds schemas tpcds_sf1, tpcds_sf10, tpcds_sf100 (+ the owner's other
+project, kept); PostgreSQL 18 cluster (stopped, start.conf manual) holds the same three
+schemas in database tpcds (193 GB incl. WAL on /data); flat files: SF1 and SF10 still in
+/data/tpcds/data (SF100 deleted). Both databases stopped. tune_os settings applied
+(not persisted). Cleanup (drop schemas, remove PostgreSQL, delete /data/tpcds) waits for
+the owner's decision.
+
+Next: owner reviews; open question q41 (below); owner records the narration
+(`video/assets/narration.mp3`), then `manim -qh --fps 60 film.py Film` in video/ for the
+final video; screenshots for the video if wanted; making the repo public needs the
+owner's approval of the results.
+
+**Open questions for the owner (asked in chat when back):**
+1. q41: Vertica needs the `count(*) > 0` -> `EXISTS` rewrite and runs that text; PostgreSQL
+   ran the original `count(*)` text (18.8 s at SF10, > 60 s limit at SF100). Measured once
+   with Vertica's EXISTS text: PostgreSQL 0.03 s (SF10) / 0.06 s (SF100), Vertica 0.05 /
+   0.11 s. Documented in RESULTS.md and analysis/. Option: identical SQL for both (give
+   PostgreSQL the EXISTS text) and rerun - needs the owner's approval.
 
 **The task:** run the TPC-DS benchmark on the same Ubuntu laptop with Vertica 26.3 and
 with PostgreSQL, compare the two side by side (query times, load, storage and
@@ -40,14 +71,20 @@ else runs there and its lid is closed.
 4. PostgreSQL tuned setup: shared_buffers / work_mem / effective_cache_size sized for the
    same ~40 GB budget, parallel workers for 22 threads, JIT on, primary keys and indexes
    on the fact tables' join and date columns, ANALYZE with a raised statistics target.
-   All settings in a config file in the repo. A second PostgreSQL run with stock
-   settings and no indexes is the "defaults" column (SF10 at least).
-5. *Per-query timeout for PostgreSQL (owner's rule, 2026-10-30):
-   `timeout = min(5 minutes, max(60 seconds, 5 x Vertica best time of the same query at
-   the same scale))`. Vertica runs first at each scale so the budgets exist. A query that
-   times out in iteration 1 is skipped in iterations 2 and 3 and reported as "did not
-   finish within its budget" with the budget shown. Worst case about 8 hours per
-   PostgreSQL iteration at SF100.
+   All settings in a config file in the repo. *No "stock defaults" PostgreSQL run
+   (dropped by the owner on 2026-10-31: tuned against tuned only). Queries: syntax-only
+   edits for PostgreSQL (same meaning, every edit listed in the repo), no hand tuning; no
+   materialized views / aggregate projections / result caches / hints for either product.
+5. *Per-query timeout for PostgreSQL (owner's rule, final 2026-10-31):
+   `timeout = max(60 seconds, 5 x Vertica best time of the same query at the same scale)`
+   (no 5-minute cap). Vertica best = best of its 3 iterations, client-side wall clock; for
+   multi-part queries the budget covers the whole query file. Vertica runs first at each
+   scale so the budgets exist. A query that times out in iteration 1 is skipped in
+   iterations 2 and 3 and reported as "did not finish within its budget" with the budget
+   shown; totals that include timeouts are lower bounds (">= X s"). Worst case with the
+   26.2 timings: 1.6 h per iteration at SF10, 2.1 h at SF100.
+   *At SF10 only: every query that timed out is rerun once, alone, with a 10-minute limit
+   (no total cap) and reported with its real time or "> 10 min".
 6. *Storage and compression are compared side by side: flat-file size, Vertica
    compressed size (projection storage), PostgreSQL table size with and without indexes
    (and TOAST), compression ratio = flat files / database size. Load time and load
@@ -111,7 +148,7 @@ else runs there and its lid is closed.
    and PostgreSQL at SF1, verify the 99 answers between the two products.
 3. SF10: generate, Vertica (design on sample -> schema with projections -> load ->
    3 iterations), PostgreSQL tuned (load -> indexes -> ANALYZE -> 3 iterations with
-   budgets), PostgreSQL defaults run.
+   budgets), SF10 rerun of timed-out queries with a 10-minute limit.
 4. SF100: same order; PostgreSQL first iteration, then iterations 2-3 with the skip
    rule. Delete flat files afterwards.
 5. Results folders (`results/<date>_sf<N>_<product>_<label>/` with metrics.csv,
@@ -149,6 +186,12 @@ Commits and pushes are done by the owner with commands prepared in the chat.
   is kept.
 
 ## Log
+
+- 2026-10-31: owner said "start the benchmark now". Final decisions: timeout
+  max(60 s, 5 x Vertica best) without cap; defaults run dropped; SF10 rerun of timed-out
+  queries with a 10-minute limit; syntax-only query edits. Blog must carry the TPC
+  fair-use disclaimer (derived from TPC-DS, not an official result), a limitations
+  section and per-query results.
 
 - 2026-10-31: GitHub repository created (private); first commit with STATUS.md and
   .gitignore pushed by the owner. Work starts only when the owner says

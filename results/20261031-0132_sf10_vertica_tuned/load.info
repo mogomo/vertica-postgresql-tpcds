@@ -1,0 +1,8 @@
+scale=10
+load_seconds=33.462
+index_seconds=0.003
+stats_seconds=3.492
+settle_seconds=0.012
+load_jobs=4
+storage_bytes=4069445801
+index_bytes=0

@@ -1,0 +1,44 @@
+metric,value,unit
+product,Vertica,
+product_version,26.3.0-2,
+deployment,"Enterprise mode, 1 node(s)",
+scale_factor,10,
+tables,24,
+total_rows,191496628,rows
+raw_data_bytes,12003207745,bytes
+stored_bytes,4069445801,bytes
+compression_ratio,2.95,raw/stored
+index_bytes,0,bytes
+stored_bytes_without_indexes,4069445801,bytes
+compression_ratio_without_indexes,2.95,raw/stored
+datagen_seconds,56.025,s
+load_seconds,33.462,s
+load_parallel_tables,4,
+load_throughput,358.7,MB/s raw
+load_rows_per_second,5722809,rows/s
+index_seconds,0.003,s
+stats_seconds,3.492,s
+iterations,3,
+queries,99,
+queries_ok_all_iterations,99,
+queries_not_finished,0,queries
+power_iteration_1_seconds,94.4,s
+power_iteration_2_seconds,94.5,s
+power_iteration_3_seconds,94.8,s
+power_best_iteration_seconds,94.4,s
+power_best_iteration_is_lower_bound,no,
+power_best_iteration_server_seconds,91.6,s
+geomean_best_iteration_seconds,0.335,s
+power_sum_best_per_query_seconds,92.9,s
+geomean_best_per_query_seconds,0.323,s
+best_per_query_is_lower_bound,no,
+queries_under_1s_best,78,queries
+max_query_memory_acquired_mb,19678,MB
+spill_events_per_iteration,32,events
+machine,Dell Inc. Precision 3591 (laptop),
+cpu,"Intel(R) Core(TM) Ultra 7 165H - 1 socket(s), 16 cores, 22 threads, max 5000 MHz, L3 24 MiB (1 instance)",
+memory,"61.0 GiB RAM, 8.0 GiB swap",
+storage,"953.9G NVMe SSD (BC901 NVMe SK hynix 1024GB), ext4",
+os,"Ubuntu 26.04.1 LTS, kernel 7.0.0-34-generic",
+setting_resource_pool,"benchmark pool tpcds_pool: memorysize=65%, maxmemorysize=none, plannedconcurrency=2, executionparallelism=AUTO",
+setting_projections,"46 projections (24 super-projections), PROJECTIONS=designed",

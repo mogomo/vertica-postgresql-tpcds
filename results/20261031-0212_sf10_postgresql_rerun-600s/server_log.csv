@@ -1,0 +1,7 @@
+iteration,query,kind,value
+1,04,temp_file_bytes,528027280
+1,11,temp_file_bytes,337351298
+1,14,duration_ms,49756.157
+1,14,duration_ms,71108.606
+1,30,duration_ms,579506.447
+1,81,duration_ms,387630.433
